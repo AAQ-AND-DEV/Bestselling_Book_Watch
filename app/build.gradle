@@ -6,6 +6,9 @@ plugins {
     id 'kotlin-parcelize'
 }
 
+def localProperties = new Properties()
+localProperties.load(new FileInputStream(rootProject.file("local.properties")))
+
 android {
     compileSdkVersion 30
     buildToolsVersion "29.0.3"
@@ -21,6 +24,9 @@ android {
     }
 
     buildTypes {
+        debug{
+            resValue("string", "nyt_key", localProperties['nytApiKey'])
+        }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
@@ -58,6 +64,8 @@ dependencies {
     implementation "com.squareup.retrofit2:retrofit:$version_retrofit"
     implementation "com.squareup.retrofit2:converter-moshi:$version_retrofit"
     implementation "com.jakewharton.retrofit:retrofit2-kotlin-coroutines-adapter:0.9.2"
+    //Scalar converter for initial test
+    implementation 'com.squareup.retrofit2:converter-scalars:2.9.0'
 
     //Interceptor for logging api calls
     implementation 'com.squareup.okhttp3:logging-interceptor:4.8.1'
