@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Bestselling Book Watch</string>
+    <string name="image_of_bestseller_title_cover">image of %1$s cover</string>
 </resources>

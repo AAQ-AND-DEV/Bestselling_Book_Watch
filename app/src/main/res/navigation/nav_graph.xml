@@ -6,5 +6,17 @@
     <fragment
         android:id="@+id/bestsellersFragment"
         android:name="com.aaqanddev.bestsellingbookwatch.main.BestsellersFragment"
-        android:label="BestsellersFragment" />
+        android:label="BestsellersFragment" >
+        <action
+            android:id="@+id/action_bestsellersFragment_to_bookDetailFragment"
+            app:destination="@id/bookDetailFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/bookDetailFragment"
+        android:name="com.aaqanddev.bestsellingbookwatch.BookDetailFragment"
+        android:label="BookDetailFragment" >
+        <argument
+            android:name="book_id"
+            app:argType="string" />
+    </fragment>
 </navigation>

@@ -1,7 +1,9 @@
 package com.aaqanddev.bestsellingbookwatch.api
 
+import com.aaqanddev.bestsellingbookwatch.model.Bestseller
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
+import java.util.UUID.randomUUID
 
 @JsonClass(generateAdapter = true)
 data class NetworkDataTransferWrapper (
@@ -125,3 +127,24 @@ data class NetworkBuyLink(
     @Json(name = "url")
     var url: String? = null
 )
+
+fun NetworkBook.asDomainModel(category: String): Bestseller {
+    //TODO fetch current version of entry for this Book -- will it be possible? could search by isbn
+
+    val categorySet = mutableSetOf<String>()
+    val catAdded = categorySet.add(category)
+    return Bestseller(
+        randomUUID().toString(), this.rank, this.weeksOnList, this.primaryIsbn10, this.primaryIsbn13, this.publisher,
+        this.description, this.title, this.author, this.bookImage, this.amazonProductUrl, this.bookReviewLink, categorySet
+    )
+}
+
+fun List<NetworkBook>.asDomainModel(category: String): List<Bestseller>{
+    val bookList = mutableListOf<Bestseller>()
+    for (book in this){
+        bookList.add(
+            book.asDomainModel(category)
+        )
+    }
+    return bookList
+}

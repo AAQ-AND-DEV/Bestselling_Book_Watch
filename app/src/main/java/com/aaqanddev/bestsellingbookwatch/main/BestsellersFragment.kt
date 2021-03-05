@@ -4,10 +4,15 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.LinearLayout
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.aaqanddev.bestsellingbookwatch.R
 import com.aaqanddev.bestsellingbookwatch.api.BestsellerService
 import com.aaqanddev.bestsellingbookwatch.api.NYTService
+import com.aaqanddev.bestsellingbookwatch.api.asDomainModel
 import com.aaqanddev.bestsellingbookwatch.databinding.FragmentBestsellersBinding
 import kotlinx.coroutines.runBlocking
 import retrofit2.Retrofit
@@ -25,6 +30,14 @@ class BestsellersFragment : Fragment() {
 
         val binding = FragmentBestsellersBinding.inflate(inflater)
 
+
+        val reclrView = binding.bestsellersReclrview
+        reclrView.layoutManager = LinearLayoutManager(this.requireContext(), RecyclerView.VERTICAL, false)
+        val adapter = BestsellerListAdapter(BestsellerClickListener{
+            bestseller ->
+                findNavController().navigate(BestsellersFragmentDirections.actionBestsellersFragmentToBookDetailFragment(bestseller.id))
+        })
+        reclrView.adapter = adapter
         runBlocking {
             val result = this@BestsellersFragment.context?.applicationContext?.resources?.getString(
                 R.string.nyt_key
@@ -38,17 +51,20 @@ class BestsellersFragment : Fragment() {
             }
             val text = StringBuilder()
             if (result != null) {
+                val category = result.results?.listName
                 val books = result.results?.books
-                if (books != null) {
-                    for (book in books) {
-                        text.append("${book.title} \n")
-                    }
-
-                }
+                val domainBooks = category?.let { books?.asDomainModel(it) }
+//                if (books != null) {
+//                    for (book in books) {
+//                        text.append("${book.title} \n")
+//                    }
+//
+//                }
+                adapter.submitList(domainBooks)
             } else {
                 Timber.e("result is null")
             }
-            binding.response.text = text
+            //binding.response.text = text
 
         }
 
