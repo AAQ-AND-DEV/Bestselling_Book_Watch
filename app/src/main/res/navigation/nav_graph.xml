@@ -16,7 +16,7 @@
         android:name="com.aaqanddev.bestsellingbookwatch.BookDetailFragment"
         android:label="BookDetailFragment" >
         <argument
-            android:name="book_id"
-            app:argType="string" />
+            android:name="book"
+            app:argType="com.aaqanddev.bestsellingbookwatch.model.Bestseller" />
     </fragment>
 </navigation>

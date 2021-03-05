@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+            <variable
+                name="bestseller"
+                type="com.aaqanddev.bestsellingbookwatch.model.Bestseller" />
+    </data>
+
+    <ScrollView
+        android:layout_height="match_parent"
+        android:layout_width="match_parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/detail_cover_img"
+                android:contentDescription="@{@string/image_of_bestseller_title_cover(bestseller.title)}"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/detail_title"
+                tools:text="title"
+                android:text="@{bestseller.title}"
+                app:layout_constraintTop_toBottomOf="@+id/detail_cover_img" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/detail_author"
+                tools:text="author"
+                android:text="@{bestseller.author}"
+                app:layout_constraintTop_toBottomOf="@id/detail_title" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/detail_publisher"
+                android:text="@{@string/publisher(bestseller.publisher)}"
+                app:layout_constraintTop_toBottomOf="@id/detail_author" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/categories_label"
+                android:text="@string/categories_label"
+                app:layout_constraintTop_toBottomOf="@id/detail_publisher" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/categories_linlo"
+                android:orientation="vertical"
+                app:layout_constraintTop_toBottomOf="@id/categories_label"
+                app:layout_constraintBottom_toTopOf="@id/desc_review_flow"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/detail_desc"
+                    android:text="@{bestseller.desc}"
+                    tools:text="description here"
+                    />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/detail_review_link"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:text="@string/review"/>
+
+            <androidx.constraintlayout.helper.widget.Flow
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:id="@+id/desc_review_flow"
+                app:constraint_referenced_ids="detail_desc,detail_review_link"
+                app:flow_verticalAlign="top"
+                app:flow_horizontalGap="@dimen/margin_medium"
+                app:layout_constraintTop_toBottomOf="@id/categories_linlo"
+                app:layout_constraintBottom_toTopOf="@id/buylinks_scrollview"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                />
+
+            <HorizontalScrollView
+                android:id="@+id/buylinks_scrollview"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_small"
+                android:layout_marginBottom="@dimen/margin_medium"
+                android:layout_marginStart="@dimen/margin_big"
+                android:layout_marginEnd="@dimen/margin_big"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/desc_review_flow"
+                app:layout_constraintBottom_toBottomOf="parent"
+                >
+
+                <LinearLayout
+                    android:id="@+id/buylinks_linlo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal">
+<!-- todo remove this placeholder textview -->
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/default_buylink"
+                        android:visibility="invisible" />
+                </LinearLayout>
+            </HorizontalScrollView>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </ScrollView>
+</layout>

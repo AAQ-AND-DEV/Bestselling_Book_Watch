@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="image_of_bestseller_title_cover">image of ${bestseller.title} cover</string>
+    <string name="review">Click to Read Review</string>
+    <string name="categories_label">Bestseller in these Categories:</string>
+    <string name="publisher">Publisher: %1$s</string>
 </resources>

@@ -1,4 +1,8 @@
 <resources>
     <string name="app_name">Bestselling Book Watch</string>
     <string name="image_of_bestseller_title_cover">image of %1$s cover</string>
+    <string name="review">Click to Read Review</string>
+    <string name="categories_label">Bestseller in these Categories:</string>
+    <string name="buyLink">Buy on %1$s</string>
+    <string name="publisher">Publisher: %1$s</string>
 </resources>

@@ -33,9 +33,12 @@ class BestsellersFragment : Fragment() {
 
         val reclrView = binding.bestsellersReclrview
         reclrView.layoutManager = LinearLayoutManager(this.requireContext(), RecyclerView.VERTICAL, false)
+        //id seems to have been attained via call to asDomainModel, so id can be accessed
+        //TODO change to passing just id, and looking up item in ViewModel for DetailFrag
+        //which will get it from repo
         val adapter = BestsellerListAdapter(BestsellerClickListener{
             bestseller ->
-                findNavController().navigate(BestsellersFragmentDirections.actionBestsellersFragmentToBookDetailFragment(bestseller.id))
+                findNavController().navigate(BestsellersFragmentDirections.actionBestsellersFragmentToBookDetailFragment(bestseller))
         })
         reclrView.adapter = adapter
         runBlocking {

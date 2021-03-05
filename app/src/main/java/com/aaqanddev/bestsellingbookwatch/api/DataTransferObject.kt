@@ -1,8 +1,10 @@
 package com.aaqanddev.bestsellingbookwatch.api
 
+import android.os.Parcelable
 import com.aaqanddev.bestsellingbookwatch.model.Bestseller
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
+import kotlinx.parcelize.Parcelize
 import java.util.UUID.randomUUID
 
 @JsonClass(generateAdapter = true)
@@ -120,22 +122,24 @@ data class NetworkBook (
 )
 
 @JsonClass(generateAdapter = true)
+@Parcelize
 data class NetworkBuyLink(
     @Json(name = "name")
     var name: String? = null,
 
     @Json(name = "url")
     var url: String? = null
-)
+): Parcelable
 
 fun NetworkBook.asDomainModel(category: String): Bestseller {
     //TODO fetch current version of entry for this Book -- will it be possible? could search by isbn
 
     val categorySet = mutableSetOf<String>()
     val catAdded = categorySet.add(category)
+    //TODO will I need to convert NetworkBuyLink to an entity for use in Room?
     return Bestseller(
         randomUUID().toString(), this.rank, this.weeksOnList, this.primaryIsbn10, this.primaryIsbn13, this.publisher,
-        this.description, this.title, this.author, this.bookImage, this.amazonProductUrl, this.bookReviewLink, categorySet
+        this.description, this.title, this.author, this.bookImage, this.amazonProductUrl, this.bookReviewLink, this.buyLinks, categorySet
     )
 }
 
