@@ -11,6 +11,7 @@ import com.aaqanddev.bestsellingbookwatch.api.NYTService
 import com.aaqanddev.bestsellingbookwatch.databinding.FragmentBestsellersBinding
 import kotlinx.coroutines.runBlocking
 import retrofit2.Retrofit
+import timber.log.Timber
 
 class BestsellersFragment : Fragment() {
     //TODO create ViewModel
@@ -25,8 +26,7 @@ class BestsellersFragment : Fragment() {
         val binding = FragmentBestsellersBinding.inflate(inflater)
 
         runBlocking {
-            val result = this@BestsellersFragment.context?.applicationContext?.resources?.
-            getString(
+            val result = this@BestsellersFragment.context?.applicationContext?.resources?.getString(
                 R.string.nyt_key
             )?.let {
                 NYTService.nytService
@@ -36,7 +36,19 @@ class BestsellersFragment : Fragment() {
                     )
 
             }
-            binding.response.text = result
+            val text = StringBuilder()
+            if (result != null) {
+                val books = result.results?.books
+                if (books != null) {
+                    for (book in books) {
+                        text.append("${book.title} \n")
+                    }
+
+                }
+            } else {
+                Timber.e("result is null")
+            }
+            binding.response.text = text
 
         }
 

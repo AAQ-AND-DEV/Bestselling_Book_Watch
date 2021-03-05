@@ -19,7 +19,7 @@ android {
         targetSdkVersion 30
         versionCode 1
         versionName "1.0"
-
+        multiDexEnabled true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -60,6 +60,12 @@ dependencies {
     // Logging
     implementation "com.jakewharton.timber:timber:$version_timber"
 
+    implementation "androidx.recyclerview:recyclerview:1.1.0"
+
+    //kotlin coroutines
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$version_coroutines"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$version_coroutines"
+
     //Retro
     implementation "com.squareup.retrofit2:retrofit:$version_retrofit"
     implementation "com.squareup.retrofit2:converter-moshi:$version_retrofit"
@@ -67,10 +73,18 @@ dependencies {
     //Scalar converter for initial test
     implementation 'com.squareup.retrofit2:converter-scalars:2.9.0'
 
+    implementation "com.squareup.moshi:moshi:$version_moshi"
+    kapt("com.squareup.moshi:moshi-kotlin-codegen:$version_moshi")
+    //is reflect required for moshi?
+    //implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
+
     //Interceptor for logging api calls
     implementation 'com.squareup.okhttp3:logging-interceptor:4.8.1'
 
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
+
+    //multi-dex support
+    implementation 'com.android.support:multidex:1.0.3'
 }

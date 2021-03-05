@@ -5,6 +5,7 @@ import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterF
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
+import retrofit2.converter.moshi.MoshiConverterFactory
 import retrofit2.converter.scalars.ScalarsConverterFactory
 import retrofit2.http.GET
 import retrofit2.http.Path
@@ -15,7 +16,7 @@ interface BestsellerService{
     @GET("{date}/{list}.json")
     suspend fun getBestsellers(@Path("date") date: String,
                                @Path("list") list: String,
-                               @Query("api-key") apiKey: String) : String
+                               @Query("api-key") apiKey: String) : NetworkDataTransferWrapper
 
     @GET("names.json")
     suspend fun getCategories(@Query("api-key") apiKey: String) : String
@@ -36,7 +37,7 @@ object NYTService {
     private val retrofit = Retrofit.Builder()
         .baseUrl("https://api.nytimes.com/svc/books/v3/lists/")
         .addCallAdapterFactory(CoroutineCallAdapterFactory())
-        .addConverterFactory(ScalarsConverterFactory.create())
+        .addConverterFactory(MoshiConverterFactory.create())
         .client(client)
         .build()
 
