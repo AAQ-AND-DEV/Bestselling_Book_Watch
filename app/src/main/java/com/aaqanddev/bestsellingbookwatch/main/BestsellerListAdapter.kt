@@ -5,6 +5,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.aaqanddev.bestsellingbookwatch.R
 import com.aaqanddev.bestsellingbookwatch.databinding.BestsellerItemVhBinding
 import com.aaqanddev.bestsellingbookwatch.model.Bestseller
 import com.squareup.picasso.Picasso
@@ -32,7 +33,10 @@ class BestsellerListAdapter (val clickListener: BestsellerClickListener): ListAd
             fun bind(listener: BestsellerClickListener, bestseller: Bestseller){
                 binding.bestseller = bestseller
                 binding.clickListener = listener
-                Picasso.get().load(bestseller.bk_img).into(binding.bookCoverImg)
+                Picasso.get().load(bestseller.bk_img)
+                    .placeholder(R.drawable.ic_baseline_cloud_download_24)
+                    .error(R.drawable.ic_baseline_error_24)
+                    .into(binding.bookCoverImg)
                 binding.executePendingBindings()
             }
 

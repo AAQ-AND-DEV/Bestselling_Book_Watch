@@ -8,6 +8,7 @@
         <variable
             name="bestseller"
             type="com.aaqanddev.bestsellingbookwatch.model.Bestseller" />
+
         <variable
             name="clickListener"
             type="com.aaqanddev.bestsellingbookwatch.main.BestsellerClickListener" />
@@ -19,15 +20,32 @@
         android:onClick="@{()->clickListener.onClick(bestseller)}">
 
         <TextView
+            android:id="@+id/rank"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/margin_small"
+            android:layout_marginEnd="@dimen/margin_small"
+            android:text="@{bestseller.rank.toString()}"
+            android:textColor="@color/color_accent_dark"
+            android:textSize="@dimen/textsize_large"
+            app:layout_constraintBottom_toBottomOf="@id/book_title"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/book_title" />
+
+        <TextView
             android:id="@+id/book_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/margin_medium"
+            android:layout_marginStart="@dimen/margin_big"
+            android:layout_marginEnd="@dimen/margin_big"
             android:text="@{bestseller.title}"
-            android:textAlignment="textStart"
+            android:textSize="@dimen/textsize_medium"
+            android:textAlignment="center"
             android:textColor="@color/color_accent"
+            app:layout_constrainedWidth="true"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/book_cover_img"
+            app:layout_constraintStart_toEndOf="@id/rank"
             app:layout_constraintTop_toTopOf="parent"
             tools:text="title" />
 
@@ -35,29 +53,32 @@
             android:id="@+id/book_author"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/margin_medium"
+            android:layout_marginStart="@dimen/margin_big"
+            android:layout_marginEnd="@dimen/margin_big"
             android:text="@{bestseller.author}"
-            android:textAlignment="textStart"
+            android:textAlignment="center"
             android:textColor="@color/color_accent"
+            app:layout_constrainedWidth="true"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/book_cover_img"
+            app:layout_constraintStart_toEndOf="@id/rank"
             app:layout_constraintTop_toBottomOf="@+id/book_title"
             tools:text="author" />
+
 
         <ImageView
             android:id="@+id/book_cover_img"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end"
-            android:layout_marginEnd="@dimen/margin_medium"
-            android:layout_marginTop="@dimen/margin_small"
             android:layout_marginStart="@dimen/margin_medium"
+            android:layout_marginTop="@dimen/margin_small"
+            android:layout_marginEnd="@dimen/margin_medium"
             android:layout_marginBottom="@dimen/margin_small"
-            app:layout_constraintBottom_toBottomOf="parent"
             android:contentDescription="@{@string/image_of_bestseller_title_cover(bestseller.title)}"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/ic_baseline_cloud_download_24"
             tools:layout_editor_absoluteY="12dp" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

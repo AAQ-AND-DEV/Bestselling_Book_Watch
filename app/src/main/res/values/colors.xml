@@ -9,4 +9,5 @@
     <color name="white">#FFFFFFFF</color>
     <color name="app_background">#222222</color>
     <color name="color_accent">#CC2299</color>
+    <color name="color_accent_dark">#B20F81</color>
 </resources>
