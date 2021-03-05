@@ -57,7 +57,7 @@
             android:contentDescription="@{@string/image_of_bestseller_title_cover(bestseller.title)}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/ic_launcher_foreground"
+            app:srcCompat="@drawable/ic_baseline_cloud_download_24"
             tools:layout_editor_absoluteY="12dp" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

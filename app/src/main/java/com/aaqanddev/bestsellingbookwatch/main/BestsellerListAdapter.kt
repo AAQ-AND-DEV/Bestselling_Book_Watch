@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.aaqanddev.bestsellingbookwatch.databinding.BestsellerItemVhBinding
 import com.aaqanddev.bestsellingbookwatch.model.Bestseller
+import com.squareup.picasso.Picasso
 
 class BestsellerListAdapter (val clickListener: BestsellerClickListener): ListAdapter<Bestseller, BestsellerListAdapter.BestsellerListViewHolder>(DiffCallback) {
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BestsellerListViewHolder {
@@ -28,9 +29,10 @@ class BestsellerListAdapter (val clickListener: BestsellerClickListener): ListAd
         }
 
         class BestsellerListViewHolder(private val binding: BestsellerItemVhBinding) : RecyclerView.ViewHolder(binding.root){
-            fun bind(listener: BestsellerClickListener, Bestseller: Bestseller){
-                binding.bestseller = Bestseller
+            fun bind(listener: BestsellerClickListener, bestseller: Bestseller){
+                binding.bestseller = bestseller
                 binding.clickListener = listener
+                Picasso.get().load(bestseller.bk_img).into(binding.bookCoverImg)
                 binding.executePendingBindings()
             }
 
