@@ -76,7 +76,7 @@ dependencies {
 
     implementation 'com.squareup.picasso:picasso:2.71828'
 
-    implementation "com.squareup.moshi:moshi:$version_moshi"
+    implementation "com.squareup.moshi:moshi-kotlin:$version_moshi"
     kapt("com.squareup.moshi:moshi-kotlin-codegen:$version_moshi")
     //is reflect required for moshi?
     //implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"

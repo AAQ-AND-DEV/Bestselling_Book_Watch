@@ -19,7 +19,7 @@ interface BestsellerService{
                                @Query("api-key") apiKey: String) : NetworkDataTransferWrapper
 
     @GET("names.json")
-    suspend fun getCategories(@Query("api-key") apiKey: String) : String
+    suspend fun getCategories(@Query("api-key") apiKey: String) : CategoriesDataTransferWrapper
 }
 
 object NYTService {

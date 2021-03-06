@@ -1,26 +1,45 @@
 package com.aaqanddev.bestsellingbookwatch.main
 
+import android.content.Context.MODE_PRIVATE
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.LinearLayout
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.aaqanddev.bestsellingbookwatch.CATEGORIES_KEY_SHARED_PREFS
+import com.aaqanddev.bestsellingbookwatch.CATEGORY_SHARED_PREFS
 import com.aaqanddev.bestsellingbookwatch.R
-import com.aaqanddev.bestsellingbookwatch.api.BestsellerService
 import com.aaqanddev.bestsellingbookwatch.api.NYTService
 import com.aaqanddev.bestsellingbookwatch.api.asDomainModel
 import com.aaqanddev.bestsellingbookwatch.databinding.FragmentBestsellersBinding
 import kotlinx.coroutines.runBlocking
-import retrofit2.Retrofit
 import timber.log.Timber
 
 class BestsellersFragment : Fragment() {
     //TODO create ViewModel
     //TODO instantiate viewModel here
+
+    private var categorySharedPrefs : SharedPreferences? = null
+    private lateinit var prefChangeListener: SharedPreferences.OnSharedPreferenceChangeListener
+
+//    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
+//        val jsonCategories = sharedPreferences?.getString(CATEGORIES_KEY_SHARED_PREFS, "")
+//        Timber.d(jsonCategories)
+//        //TODO parse the lines of the jsonCategories to Categories
+//        // TODO set the value of the viewModel observed cats to the result
+//        //Ah, but this will only be called when it's changed...so need other source
+//    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        categorySharedPrefs = context?.getSharedPreferences(CATEGORY_SHARED_PREFS, MODE_PRIVATE)
+
+
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -30,6 +49,18 @@ class BestsellersFragment : Fragment() {
 
         val binding = FragmentBestsellersBinding.inflate(inflater)
 
+        prefChangeListener = SharedPreferences.OnSharedPreferenceChangeListener(){
+                sharedPreferences: SharedPreferences, key: String ->
+            val jsonCategories = sharedPreferences.getString(CATEGORIES_KEY_SHARED_PREFS, "")
+            Timber.d("inside sharedPrefChangeListnr: $jsonCategories")
+        }
+
+        categorySharedPrefs?.registerOnSharedPreferenceChangeListener(prefChangeListener)
+
+        //Timber.d(sharedPrefs.toString())
+
+        val jsonCategories = categorySharedPrefs?.getString(CATEGORIES_KEY_SHARED_PREFS, "")
+        Timber.d("outside changeListener: $jsonCategories")
 
         val reclrView = binding.bestsellersReclrview
         reclrView.layoutManager = LinearLayoutManager(this.requireContext(), RecyclerView.VERTICAL, false)
@@ -75,4 +106,16 @@ class BestsellersFragment : Fragment() {
         return binding.root
         //return super.onCreateView(inflater, container, savedInstanceState)
     }
+
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        categorySharedPrefs?.unregisterOnSharedPreferenceChangeListener(prefChangeListener)
+        }
+
+    override fun onDestroy() {
+        super.onDestroy()
+
+    }
+
 }
