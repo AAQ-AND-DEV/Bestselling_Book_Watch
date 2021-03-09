@@ -7,9 +7,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.aaqanddev.bestsellingbookwatch.BestsellersApplication
 import com.aaqanddev.bestsellingbookwatch.CATEGORIES_KEY_SHARED_PREFS
 import com.aaqanddev.bestsellingbookwatch.CATEGORY_SHARED_PREFS
 import com.aaqanddev.bestsellingbookwatch.R
@@ -17,11 +20,16 @@ import com.aaqanddev.bestsellingbookwatch.api.NYTService
 import com.aaqanddev.bestsellingbookwatch.api.asDomainModel
 import com.aaqanddev.bestsellingbookwatch.databinding.FragmentBestsellersBinding
 import kotlinx.coroutines.runBlocking
+import org.koin.android.viewmodel.ext.android.viewModel
 import timber.log.Timber
 
 class BestsellersFragment : Fragment() {
-    //TODO create ViewModel
-    //TODO instantiate viewModel here
+    //declare ViewModel
+//    private val bestsellersViewModel by activityViewModels< BestsellersViewModel>{
+//        BestsellerViewModelFactory((requireContext().applicationContext as BestsellersApplication), (requireContext().applicationContext as BestsellersApplication). )
+//    }
+    // inject viewModel here by koin
+    private val bestsellersViewModel :BestsellersViewModel by viewModel()
 
     private var categorySharedPrefs : SharedPreferences? = null
     private lateinit var prefChangeListener: SharedPreferences.OnSharedPreferenceChangeListener
@@ -37,7 +45,6 @@ class BestsellersFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         categorySharedPrefs = context?.getSharedPreferences(CATEGORY_SHARED_PREFS, MODE_PRIVATE)
-
 
     }
 
@@ -72,35 +79,17 @@ class BestsellersFragment : Fragment() {
                 findNavController().navigate(BestsellersFragmentDirections.actionBestsellersFragmentToBookDetailFragment(bestseller))
         })
         reclrView.adapter = adapter
-        runBlocking {
-            val result = this@BestsellersFragment.context?.applicationContext?.resources?.getString(
-                R.string.nyt_key
-            )?.let {
-                NYTService.nytService
-                    .getBestsellers(
-                        "current", "hardcover-fiction",
-                        it
-                    )
 
-            }
-            val text = StringBuilder()
-            if (result != null) {
-                val category = result.results?.listName
-                val books = result.results?.books
-                val domainBooks = category?.let { books?.asDomainModel(it) }
-//                if (books != null) {
-//                    for (book in books) {
-//                        text.append("${book.title} \n")
-//                    }
-//
-//                }
-                adapter.submitList(domainBooks)
-            } else {
-                Timber.e("result is null")
-            }
-            //binding.response.text = text
 
+        bestsellersViewModel.bestsellersToDisplay.observe(viewLifecycleOwner){
+            adapter.submitList(it)
+            adapter.notifyDataSetChanged()
         }
+//        runBlocking {
+//
+//            //binding.response.text = text
+//
+//        }
 
 
         return binding.root

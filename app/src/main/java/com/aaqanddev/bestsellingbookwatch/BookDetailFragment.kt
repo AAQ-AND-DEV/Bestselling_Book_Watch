@@ -32,6 +32,8 @@ class BookDetailFragment : Fragment() {
 
         val categoriesLinLo = binding.categoriesLinlo
         val categories = book.categories
+        if (categories!=null){
+
         for (cat in categories){
         val textView = TextView(requireContext())
             textView.text = cat
@@ -39,10 +41,13 @@ class BookDetailFragment : Fragment() {
             //TODO polish/post add onClick to send to listView of that category
         }
 
+        }
         val buylinkLinLo = binding.buylinksLinlo
-        val buyLinks = book.buyLinks
+        val netBuyLinks = book.buyLinks
+        val buyLinks = netBuyLinks?.buyLinks
         if (buyLinks != null) {
             for (link in buyLinks){
+                //TODO make a layout for this that looks better
                 val textView = TextView(requireContext())
                 textView.text = resources.getString(R.string.buyLink,link.name)
                 textView.isClickable = true
