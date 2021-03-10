@@ -7,6 +7,7 @@ import com.aaqanddev.bestsellingbookwatch.model.Category
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
+import timber.log.Timber
 
 class RoomConverter {
     private val moshi = Moshi.Builder().addLast(KotlinJsonAdapterFactory()).build()
@@ -70,14 +71,17 @@ class RoomConverter {
 
     @TypeConverter
     fun fromNBL(links:List<NetworkBuyLink>?): String{
-        val json = StringBuilder()
+        var json : StringBuilder? =null
         if (!links.isNullOrEmpty()){
             for (link in links){
+
+                json = java.lang.StringBuilder()
                 json.append("${nblAdapter.toJson(link)} \t")
 
             }
 
         }
+        Timber.d("json string in fromNBL: ${json.toString()}")
         return json.toString()
     }
 
@@ -88,7 +92,11 @@ class RoomConverter {
         if (!links.isNullOrEmpty()){
             list = mutableListOf()
             for (link in links){
+                Timber.d("toNBL val of parsed links: $link")
+                if (link.isNotBlank()){
+
                 nblAdapter.fromJson(link)?.let { list.add(it) }
+                }
             }
         }
         return list

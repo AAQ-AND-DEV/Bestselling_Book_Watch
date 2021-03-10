@@ -9,11 +9,13 @@ import com.aaqanddev.bestsellingbookwatch.R
 import com.aaqanddev.bestsellingbookwatch.api.NYTService
 import com.aaqanddev.bestsellingbookwatch.api.asDomainModel
 import com.aaqanddev.bestsellingbookwatch.model.Category
+import com.aaqanddev.bestsellingbookwatch.util.isNetworkAvailable
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import kotlinx.coroutines.runBlocking
 import timber.log.Timber
+import java.lang.Exception
 
 class MainActivity : AppCompatActivity() {
 
@@ -23,6 +25,11 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         runBlocking {
+            if (isNetworkAvailable(this@MainActivity)){
+
+            try{
+
+
             val result = this@MainActivity.applicationContext?.resources?.getString(
                 R.string.nyt_key
             )?.let {
@@ -49,6 +56,10 @@ class MainActivity : AppCompatActivity() {
             //Timber.d(catJsonStringBuilder.toString())
             editor.putString(CATEGORIES_KEY_SHARED_PREFS, catJsonStringBuilder.toString())
             editor.apply()
+        } catch (e: Exception){
+            Timber.e("error for NYT api categoryList fetch: ${e.localizedMessage}")
+        }
+            }
         }
 
     }

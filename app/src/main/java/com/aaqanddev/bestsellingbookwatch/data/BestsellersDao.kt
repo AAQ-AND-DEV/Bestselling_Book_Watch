@@ -11,7 +11,7 @@ import com.aaqanddev.bestsellingbookwatch.model.Bestseller
 interface BestsellersDao {
 
     @Query("SELECT * FROM Bestsellers")
-    fun observeBestsellers(): LiveData<List<Bestseller>>
+    fun getBestsellers(): List<Bestseller>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun addAll(bestsellers: List<Bestseller>)
