@@ -36,7 +36,6 @@ class RoomConverter {
         return if (set.isEmpty()) null else set
     }
 
-    //TODO write Type converter for NetworkBuyLinks
     @TypeConverter
     fun fromNBLS(nbls: NetworkBuyLinks?): String? {
 //        val sb = StringBuilder()
@@ -81,7 +80,7 @@ class RoomConverter {
             }
 
         }
-        Timber.d("json string in fromNBL: ${json.toString()}")
+        //Timber.d("json string in fromNBL: ${json.toString()}")
         return json.toString()
     }
 
@@ -92,7 +91,7 @@ class RoomConverter {
         if (!links.isNullOrEmpty()){
             list = mutableListOf()
             for (link in links){
-                Timber.d("toNBL val of parsed links: $link")
+                //Timber.d("toNBL val of parsed links: $link")
                 if (link.isNotBlank()){
 
                 nblAdapter.fromJson(link)?.let { list.add(it) }

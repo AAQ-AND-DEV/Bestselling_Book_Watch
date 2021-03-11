@@ -6,6 +6,8 @@ import com.aaqanddev.bestsellingbookwatch.api.NYTService
 import com.aaqanddev.bestsellingbookwatch.data.BestsellerDataSource
 import com.aaqanddev.bestsellingbookwatch.data.BestsellerDatabase
 import com.aaqanddev.bestsellingbookwatch.data.BestsellersDao
+import com.aaqanddev.bestsellingbookwatch.data.category.CategoryDao
+import com.aaqanddev.bestsellingbookwatch.data.category.CategoryDatabase
 import com.aaqanddev.bestsellingbookwatch.data.remote.BestsellersRepository
 import com.aaqanddev.bestsellingbookwatch.main.BestsellersViewModel
 import kotlinx.coroutines.CoroutineDispatcher
@@ -20,12 +22,26 @@ val myModule = module{
         BestsellersViewModel(get(), get() as BestsellerDataSource)
     }
     single{
-        BestsellersRepository(get(), get(), get(), get()) as BestsellerDataSource
+        BestsellersRepository(get(), get(), get(), get(), get()) as BestsellerDataSource
     }
     single{
         NYTService
     }
     factory{ Dispatchers.IO}
+}
+
+val catDbModule = module{
+    fun provideDb(application: Application): CategoryDatabase{
+        return Room.databaseBuilder(application, CategoryDatabase::class.java, "Categories")
+            .fallbackToDestructiveMigration()
+            .build()
+    }
+    fun provideCategoryDao(db: CategoryDatabase): CategoryDao{
+        return db.categoryDao()
+    }
+
+    single{provideDb(androidApplication())}
+    single { provideCategoryDao(get()) }
 }
 
 val dbModule = module{

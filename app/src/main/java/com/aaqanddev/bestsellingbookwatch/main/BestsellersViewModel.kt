@@ -8,7 +8,6 @@ import com.aaqanddev.bestsellingbookwatch.data.BestsellerDataSource
 import com.aaqanddev.bestsellingbookwatch.model.Bestseller
 import com.aaqanddev.bestsellingbookwatch.model.Category
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 
 class BestsellersViewModel(
     app: Application,
@@ -32,12 +31,44 @@ class BestsellersViewModel(
         get() = _allCategories
 
     init{
+        fetchCategoriesList()
         fetchActiveList()
+    }
+
+    //TODO possibly modify this method
+    fun updateAllCategories(cats : List<Category>){
+        _allCategories.value = cats
+        //also insert into db TODO refactor to have repo handle the API call, not MainActivity
+    }
+
+    fun updateActiveList(encodedName: String){
+        _activeList.value = encodedName
+    }
+
+    fun updateCategory(cat: Category){
+        viewModelScope.launch{
+            repository.updateCategory(cat)
+        }
+    }
+
+    fun fetchCategoriesList(){
+        viewModelScope.launch{
+            val res = repository.getCategories()
+            if (res != null){
+                when (res){
+                    is AppResult.Success<*> ->
+                        _allCategories.value = res.data as List<Category>
+                    is AppResult.Error ->{
+                        _allCategories.value = emptyList()
+                    }
+                }
+            }
+        }
     }
 
     fun fetchActiveList(){
         viewModelScope.launch {
-            val result = repository.getBestsellers()
+            val result = repository.getBestsellers(activeList.value)
             //TODO incorporate showLoading pattern
             if (result != null){
 

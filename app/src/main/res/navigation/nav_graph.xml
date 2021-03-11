@@ -10,6 +10,10 @@
         <action
             android:id="@+id/action_bestsellersFragment_to_bookDetailFragment"
             app:destination="@id/bookDetailFragment" />
+        <action
+            android:id="@+id/action_bestsellersFragment_to_categoryChooserFragment"
+            app:destination="@id/categoryChooserFragment"
+            app:popUpTo="@id/bestsellersFragment" />
     </fragment>
     <fragment
         android:id="@+id/bookDetailFragment"
@@ -19,4 +23,8 @@
             android:name="book"
             app:argType="com.aaqanddev.bestsellingbookwatch.model.Bestseller" />
     </fragment>
+    <fragment
+        android:id="@+id/categoryChooserFragment"
+        android:name="com.aaqanddev.bestsellingbookwatch.categoryChooser.CategoryChooserFragment"
+        android:label="CategoryChooserDialogFragment" />
 </navigation>

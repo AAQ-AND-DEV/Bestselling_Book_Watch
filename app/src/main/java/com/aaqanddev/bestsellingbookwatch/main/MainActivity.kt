@@ -3,6 +3,7 @@ package com.aaqanddev.bestsellingbookwatch.main
 import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import com.aaqanddev.bestsellingbookwatch.ACTIVE_CAT_SHARED_PREFS_KEY
 import com.aaqanddev.bestsellingbookwatch.CATEGORIES_KEY_SHARED_PREFS
 import com.aaqanddev.bestsellingbookwatch.CATEGORY_SHARED_PREFS
 import com.aaqanddev.bestsellingbookwatch.R
@@ -14,53 +15,42 @@ import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import kotlinx.coroutines.runBlocking
+import org.koin.android.viewmodel.ext.android.viewModel
 import timber.log.Timber
 import java.lang.Exception
 
 class MainActivity : AppCompatActivity() {
 
+    private val bestsellersViewModel: BestsellersViewModel by viewModel()
+
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        //TODO do I want to do this access to ViewModel here?
+        bestsellersViewModel.observedCategories.observe(this){
+            //not doing anything here with this data,
+            //just instantiating viewModel to initiate data fetch,
+            //may be better to do in
+        }
+        val categorySharedPrefs = this.getSharedPreferences(CATEGORY_SHARED_PREFS, MODE_PRIVATE)
+
+        val activeCat = categorySharedPrefs?.getString(ACTIVE_CAT_SHARED_PREFS_KEY, "")
+        if (!activeCat.isNullOrEmpty()){
+            bestsellersViewModel.updateActiveList(activeCat)
+        }
+
         setContentView(R.layout.activity_main)
 
-        runBlocking {
-            if (isNetworkAvailable(this@MainActivity)){
-
-            try{
 
 
-            val result = this@MainActivity.applicationContext?.resources?.getString(
-                R.string.nyt_key
-            )?.let {
-                NYTService.nytService
-                    .getCategories(it)
-            }
-            //Timber.d(result?.results.toString())
-            val sharedPrefs = baseContext.getSharedPreferences(CATEGORY_SHARED_PREFS, MODE_PRIVATE)
-            val editor = sharedPrefs.edit()
-            val networkCategories = result?.results
-            val categories = networkCategories?.asDomainModel()
-            //Timber.d(categories.toString())
-            val moshi = Moshi.Builder().addLast(KotlinJsonAdapterFactory()).build()
-            val adapter: JsonAdapter<Category> = moshi.adapter(Category::class.java)
-            val catJsonStringBuilder = StringBuilder()
-            if (categories != null) {
-                val sortedCats = categories.sortedBy { it?.displayName }
-                for (cat in sortedCats) {
-                    catJsonStringBuilder.append(adapter.toJson(cat))
-                    catJsonStringBuilder.append("\n")
-                }
 
-            }
-            //Timber.d(catJsonStringBuilder.toString())
-            editor.putString(CATEGORIES_KEY_SHARED_PREFS, catJsonStringBuilder.toString())
-            editor.apply()
-        } catch (e: Exception){
-            Timber.e("error for NYT api categoryList fetch: ${e.localizedMessage}")
-        }
-            }
-        }
+
+        //TODO may want to do something with sharedPreferences here?
+
+
+
 
     }
 }

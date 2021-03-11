@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable
+            name="category"
+            type="com.aaqanddev.bestsellingbookwatch.model.Category" />
+    </data>
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/textsize_medium"
+            android:padding="@dimen/margin_small"
+            android:layout_margin="@dimen/margin_tiny"
+            android:background="@{category.isWatched ? @color/color_accent_light : @color/light_gray_bg }"
+            android:id="@+id/category_displayName"
+            android:text="@{category.displayName}"
+            tools:text="This is a string"
+            />
+    </LinearLayout>
+</layout>

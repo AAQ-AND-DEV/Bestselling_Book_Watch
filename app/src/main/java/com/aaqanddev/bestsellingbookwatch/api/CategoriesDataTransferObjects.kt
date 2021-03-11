@@ -21,6 +21,7 @@ class CategoriesDataTransferWrapper(
 
 
 //TODO polish/post can traverse past lists with oldestPublishedDate, and nextPublishedDate of NetworkResults class of Bestsellers
+//or use newestPublishedDate and traverse with NetworkResults.previous_published_date
 @JsonClass(generateAdapter = true)
 data class NetworkCategory(
     @Json(name = "list_name")
@@ -48,7 +49,7 @@ fun NetworkCategory.asDomainModel(): Category? {
     if (this.displayName != null && this.listNameEncoded != null && this.oldestPublishedDate != null) {
 
         category = Category(
-            this.displayName!!, this.listNameEncoded!!, this.oldestPublishedDate!!
+            this.displayName!!, this.listNameEncoded!!, this.newestPublishedDate!!, this.oldestPublishedDate!!
         )
     }
     return category

@@ -15,7 +15,7 @@ class BestsellersApplication : Application() {
             androidLogger()
             androidContext(this@BestsellersApplication)
             modules(
-                listOf(dbModule,
+                listOf(dbModule, catDbModule,
                 myModule)
             )
         }

@@ -5,4 +5,7 @@
     <string name="categories_label">Bestseller in these Categories:</string>
     <string name="buyLink">Buy on %1$s</string>
     <string name="publisher">Publisher: %1$s</string>
+    <string name="confirm_selection">Confirm Selection</string>
+    <string name="cat_select_instructions">Long-Click a category to start selecting categories to watch. When you\'re finished, click \'Confirm Selection\'</string>
+    <string name="chooser_title">Bestseller Category Chooser</string>
 </resources>
