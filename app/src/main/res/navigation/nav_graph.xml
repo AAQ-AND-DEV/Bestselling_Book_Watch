@@ -14,6 +14,9 @@
             android:id="@+id/action_bestsellersFragment_to_categoryChooserFragment"
             app:destination="@id/categoryChooserFragment"
             app:popUpTo="@id/bestsellersFragment" />
+        <action
+            android:id="@+id/action_bestsellersFragment_to_aboutFragment"
+            app:destination="@id/aboutFragment" />
     </fragment>
     <fragment
         android:id="@+id/bookDetailFragment"
@@ -27,4 +30,8 @@
         android:id="@+id/categoryChooserFragment"
         android:name="com.aaqanddev.bestsellingbookwatch.categoryChooser.CategoryChooserFragment"
         android:label="CategoryChooserDialogFragment" />
+    <fragment
+        android:id="@+id/aboutFragment"
+        android:name="com.aaqanddev.bestsellingbookwatch.about.AboutFragment"
+        android:label="AboutFragment" />
 </navigation>

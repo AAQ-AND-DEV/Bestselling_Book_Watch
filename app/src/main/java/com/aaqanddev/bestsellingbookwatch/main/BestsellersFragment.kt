@@ -3,9 +3,7 @@ package com.aaqanddev.bestsellingbookwatch.main
 import android.content.Context.MODE_PRIVATE
 import android.content.SharedPreferences
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
@@ -50,7 +48,7 @@ class BestsellersFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         categorySharedPrefs = context?.getSharedPreferences(CATEGORY_SHARED_PREFS, MODE_PRIVATE)
-
+        setHasOptionsMenu(true)
     }
 
     override fun onCreateView(
@@ -162,6 +160,24 @@ class BestsellersFragment : Fragment() {
         //categorySharedPrefs?.unregisterOnSharedPreferenceChangeListener(prefChangeListener)
     }
 
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.menu_main, menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId){
+            R.id.aboutFragment -> {
+                findNavController().navigate(BestsellersFragmentDirections.actionBestsellersFragmentToAboutFragment())
+                true
+            }
+            R.id.categoryChooserFragment -> {
+                findNavController().navigate(R.id.categoryChooserFragment)
+                return true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+
+    }
     override fun onDestroy() {
         super.onDestroy()
 
