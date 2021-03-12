@@ -12,4 +12,5 @@
     <color name="color_accent">#CC2299</color>
     <color name="color_accent_dark">#B20F81</color>
     <color name="color_accent_light">#FF66CC</color>
+    <color name="color_accent_light_bg">#44FF66CC</color>
 </resources>

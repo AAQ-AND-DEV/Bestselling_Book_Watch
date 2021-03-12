@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.addCallback
 import androidx.fragment.app.Fragment
@@ -22,6 +23,7 @@ import com.aaqanddev.bestsellingbookwatch.WATCHED_CATS_KEY_SHARED_PREFS
 import com.aaqanddev.bestsellingbookwatch.databinding.FragmentCategoryChooserBinding
 import com.aaqanddev.bestsellingbookwatch.main.BestsellersViewModel
 import com.aaqanddev.bestsellingbookwatch.model.Category
+import com.aaqanddev.bestsellingbookwatch.util.getWatchedCatsFromSharedPrefs
 import com.google.android.material.snackbar.Snackbar
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi
@@ -89,6 +91,9 @@ class CategoryChooserFragment : Fragment() {
             watchList =
                 savedInstanceState.getLongArray(BUNDLE_KEY_WATCHARRAY_CATCHOOSER)?.toMutableList()!!
             Timber.d(watchList.toString())
+        } else{
+            //TODO Ahhh! my watchList is Longs, could I get away with changing the Tracker to using Categories?
+            watchList = getWatchedCatsFromSharedPrefs(requireContext())
         }
 
         val binding = FragmentCategoryChooserBinding.inflate(inflater)
@@ -180,7 +185,11 @@ class CategoryChooserFragment : Fragment() {
                 //editor.putString(WATCHED_CATEGORIES_SHARED)
                 editor?.putString(WATCHED_CATS_KEY_SHARED_PREFS, catJsonStringBuilder.toString())
                 editor?.apply()
+            if (watchedCats.isNotEmpty()){
                 findNavController().popBackStack()
+            } else{
+                Toast.makeText(requireContext(), "Must choose at least one category to watch", Toast.LENGTH_LONG).show()
+            }
             }
 
             return binding.root

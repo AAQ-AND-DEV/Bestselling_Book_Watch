@@ -1,6 +1,8 @@
 package com.aaqanddev.bestsellingbookwatch.data.remote
 
 import android.content.Context
+import android.content.SharedPreferences
+import com.aaqanddev.bestsellingbookwatch.CATEGORY_SHARED_PREFS
 import com.aaqanddev.bestsellingbookwatch.R
 import com.aaqanddev.bestsellingbookwatch.api.NYTService
 import com.aaqanddev.bestsellingbookwatch.api.NetworkBook
@@ -11,6 +13,7 @@ import com.aaqanddev.bestsellingbookwatch.data.AppResult
 import com.aaqanddev.bestsellingbookwatch.data.category.CategoryDao
 import com.aaqanddev.bestsellingbookwatch.model.Bestseller
 import com.aaqanddev.bestsellingbookwatch.model.Category
+import com.aaqanddev.bestsellingbookwatch.util.getWatchedCatsFromSharedPrefs
 import com.aaqanddev.bestsellingbookwatch.util.isNetworkAvailable
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
@@ -27,9 +30,9 @@ class BestsellersRepository(
 ) : BestsellerDataSource {
 
     override suspend fun getBestsellers(encodedListName: String?): AppResult<List<Bestseller>>? {
+
         var domainBooksResult: AppResult<List<Bestseller>>? = null
         val domainBooks: List<Bestseller>?
-
 
         Timber.d("networkAvailability: ${isNetworkAvailable(context)}")
         if (isNetworkAvailable(context)) {
@@ -102,6 +105,10 @@ class BestsellersRepository(
     override suspend fun getCategories(): AppResult<List<Category>>? {
 
         var categoriesResult: AppResult<List<Category>>? = null
+        val currWatchedCats = getWatchedCatsFromSharedPrefs(context)
+        val currWatchedCatsEncodedNames = currWatchedCats.map{
+            it.encodedName
+        }
         if (isNetworkAvailable(context)) {
 
             //TODO add cache and cache timeout (in sharedPrefs?)
@@ -119,19 +126,22 @@ class BestsellersRepository(
                 val networkCategories = result?.results
 
                 val categories = networkCategories?.asDomainModel()
-                //TODO can I access SharedPrefs here to attain list of watchedCats
-                //update this list accordingly?
+                //access SharedPrefs list of watchedCats and modify categories
+                //to update isWatched value before adding to Db
                 if (categories != null) {
+                    categories.forEach {
+                        if (currWatchedCatsEncodedNames.contains(it?.encodedName)){
+                            it?.isWatched = true
+                        }
+                    }
+                    Timber.d("after checking against SharedPrefs watchlist: $categories")
 
                     withContext(dispatcher) {
                         try {
-                            //TODO here all categories will be added anew,
-                            // but I want it to persist the isWatched var
-
                             catDao.addAll(categories as List<Category>)
                             categoriesResult = AppResult.Success(categories)
 
-                        } catch (e: TypeCastException) {
+                        } catch (e: Exception) {
                             Timber.e("probably cast exception: ${e.localizedMessage}")
                         }
                     }
