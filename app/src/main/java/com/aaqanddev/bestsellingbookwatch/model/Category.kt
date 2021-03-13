@@ -16,4 +16,19 @@ data class Category(
     val oldestPublishedDate: String,
     val newestPublishedDate: String,
     var isWatched: Boolean = false
-): Parcelable
+): Parcelable{
+    override fun equals(other: Any?): Boolean {
+        return (this.encodedName==(other as Category).encodedName
+                && this.displayName==other.displayName
+                && this.newestPublishedDate==other.newestPublishedDate
+                && this.oldestPublishedDate==other.oldestPublishedDate)
+    }
+
+    override fun hashCode(): Int {
+        var result = displayName.hashCode()
+        result = 31 * result + encodedName.hashCode()
+        result = 31 * result + oldestPublishedDate.hashCode()
+        result = 31 * result + newestPublishedDate.hashCode()
+        return result
+    }
+}

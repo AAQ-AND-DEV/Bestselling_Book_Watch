@@ -10,4 +10,5 @@
     <string name="chooser_title">Bestseller Category Chooser</string>
     <string name="about">About</string>
     <string name="choose_categories">Choose Categories</string>
+    <string name="no_data">no category data available</string>
 </resources>
