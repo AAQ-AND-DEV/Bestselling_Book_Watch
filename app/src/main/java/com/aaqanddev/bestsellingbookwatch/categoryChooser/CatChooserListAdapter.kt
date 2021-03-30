@@ -43,7 +43,7 @@ class CatChooserListAdapter(
     }
 
     override fun onBindViewHolder(holder: CatChooserViewHolder, position: Int) {
-        Timber.d("current list size: ${currentList.size}")
+        //Timber.d("current list size: ${currentList.size}")
         holder.bind(getItem(position))
     }
 

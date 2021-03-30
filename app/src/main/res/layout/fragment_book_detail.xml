@@ -12,16 +12,22 @@
 
     <ScrollView
         android:layout_height="match_parent"
-        android:layout_width="match_parent">
+        android:layout_width="match_parent"
+        android:background="@color/med_gray_bg">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:background="@color/light_gray_bg"
+            >
 
             <ImageView
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:paddingBottom="@dimen/margin_medium"
+                android:paddingTop="@dimen/textsize_medium"
                 android:id="@+id/detail_cover_img"
+                android:background="@color/med_gray_bg"
                 android:contentDescription="@{@string/image_of_bestseller_title_cover(bestseller.title)}"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -32,6 +38,10 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/detail_title"
                 tools:text="title"
+                android:textSize="@dimen/textsize_large"
+                android:textStyle="bold"
+                android:textColor="@color/color_accent_very_dark"
+                android:gravity="center_horizontal"
                 android:text="@{bestseller.title}"
                 app:layout_constraintTop_toBottomOf="@+id/detail_cover_img" />
 
@@ -40,13 +50,17 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/detail_author"
                 tools:text="author"
-                android:text="@{bestseller.author}"
-                app:layout_constraintTop_toBottomOf="@id/detail_title" />
+                android:text="@{@string/book_detail_author(bestseller.author)}"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/detail_title"
+                style="@style/regular_text_style" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/detail_publisher"
+                style="@style/regular_text_style"
                 android:text="@{@string/publisher(bestseller.publisher)}"
                 app:layout_constraintTop_toBottomOf="@id/detail_author" />
 
@@ -54,6 +68,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/categories_label"
+                style="@style/regular_text_style"
                 android:text="@string/categories_label"
                 app:layout_constraintTop_toBottomOf="@id/detail_publisher" />
 
@@ -69,22 +84,31 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:id="@+id/detail_desc"
-                    android:text="@{bestseller.desc}"
+                    android:text="@{@string/detail_desc(bestseller.desc)}"
+                    android:layout_marginTop="@dimen/margin_medium"
+                    android:layout_marginBottom="@dimen/margin_medium"
+                    android:paddingStart="@dimen/margin_medium"
+                    android:paddingEnd="@dimen/margin_medium"
                     tools:text="description here"
-                    />
+                    style="@style/regular_text_style"/>
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:id="@+id/detail_review_link"
+                    style="@style/regular_text_style"
                     android:clickable="true"
                     android:focusable="true"
-                    android:text="@string/review"/>
+                    android:text="@{@string/detail_review(bestseller.reviewUrl)}"
+                    reviewLink="@{bestseller.reviewUrl}"
+                    />
 
             <androidx.constraintlayout.helper.widget.Flow
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:id="@+id/desc_review_flow"
+                app:flow_horizontalStyle="spread"
+                app:flow_wrapMode="chain"
                 app:constraint_referenced_ids="detail_desc,detail_review_link"
                 app:flow_verticalAlign="top"
                 app:flow_horizontalGap="@dimen/margin_medium"
@@ -98,20 +122,24 @@
                 android:id="@+id/buylinks_scrollview"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:background="@color/med_gray_bg"
                 android:layout_marginTop="@dimen/margin_small"
                 android:layout_marginBottom="@dimen/margin_medium"
                 android:layout_marginStart="@dimen/margin_big"
                 android:layout_marginEnd="@dimen/margin_big"
+                android:scrollbarAlwaysDrawHorizontalTrack="true"
+                android:fadeScrollbars="false"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/desc_review_flow"
                 app:layout_constraintBottom_toBottomOf="parent"
                 >
 
-                <LinearLayout
+                <androidx.appcompat.widget.LinearLayoutCompat
                     android:id="@+id/buylinks_linlo"
                     android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/med_gray_bg"
                     android:orientation="horizontal">
 <!-- todo remove this placeholder textview -->
                     <TextView
@@ -119,7 +147,7 @@
                         android:layout_height="wrap_content"
                         android:id="@+id/default_buylink"
                         android:visibility="invisible" />
-                </LinearLayout>
+                </androidx.appcompat.widget.LinearLayoutCompat>
             </HorizontalScrollView>
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>

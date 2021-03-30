@@ -1,12 +1,10 @@
 package com.aaqanddev.bestsellingbookwatch.api
 
 import android.os.Parcelable
-import androidx.room.Entity
 import com.aaqanddev.bestsellingbookwatch.model.Bestseller
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 import kotlinx.parcelize.Parcelize
-import java.util.UUID.randomUUID
 
 @JsonClass(generateAdapter = true)
 data class NetworkDataTransferWrapper (
@@ -146,17 +144,20 @@ fun NetworkBook.asDomainModel(category: String): Bestseller {
     //embedded NetworkBuyLinks for Room usage,
     // alternatively, could convert NetworkBuyLink to an entity, but no reason to search those links
     return Bestseller(
-        randomUUID().toString(), this.rank, this.weeksOnList, this.primaryIsbn10, this.primaryIsbn13, this.publisher,
+         null, this.rank, this.weeksOnList, this.primaryIsbn10, this.primaryIsbn13, this.publisher,
         this.description, this.title, this.author, this.bookImage, this.amazonProductUrl, this.bookReviewLink, NetworkBuyLinks(this.buyLinks), categorySet
     )
 }
 
 fun List<NetworkBook>.asDomainModel(category: String): List<Bestseller>{
-    val bookList = mutableListOf<Bestseller>()
-    for (book in this){
-        bookList.add(
-            book.asDomainModel(category)
-        )
+//    val bookList = mutableListOf<Bestseller>()
+//    for (book in this){
+//        bookList.add(
+//            book.asDomainModel(category)
+//        )
+//    }
+//    return bookList
+    return map{
+        it.asDomainModel(category)
     }
-    return bookList
 }

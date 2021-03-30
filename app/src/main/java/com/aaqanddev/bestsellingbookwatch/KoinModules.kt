@@ -2,7 +2,7 @@ package com.aaqanddev.bestsellingbookwatch
 
 import android.app.Application
 import androidx.room.Room
-import com.aaqanddev.bestsellingbookwatch.api.NYTService
+import com.aaqanddev.bestsellingbookwatch.api.BestsellerService
 import com.aaqanddev.bestsellingbookwatch.data.BestsellerDataSource
 import com.aaqanddev.bestsellingbookwatch.data.BestsellerDatabase
 import com.aaqanddev.bestsellingbookwatch.data.BestsellersDao
@@ -10,11 +10,17 @@ import com.aaqanddev.bestsellingbookwatch.data.category.CategoryDao
 import com.aaqanddev.bestsellingbookwatch.data.category.CategoryDatabase
 import com.aaqanddev.bestsellingbookwatch.data.remote.BestsellersRepository
 import com.aaqanddev.bestsellingbookwatch.main.BestsellersViewModel
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.CoroutineScope
+import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
 import kotlinx.coroutines.Dispatchers
+import okhttp3.ConnectionPool
+import okhttp3.OkHttpClient
+import okhttp3.Protocol
+import okhttp3.logging.HttpLoggingInterceptor
 import org.koin.android.ext.koin.androidApplication
 import org.koin.dsl.module
+import retrofit2.Retrofit
+import retrofit2.converter.moshi.MoshiConverterFactory
+import java.util.concurrent.TimeUnit
 
 val myModule = module{
 
@@ -23,9 +29,6 @@ val myModule = module{
     }
     single{
         BestsellersRepository(get(), get(), get(), get(), get()) as BestsellerDataSource
-    }
-    single{
-        NYTService
     }
     factory{ Dispatchers.IO}
 }
@@ -57,4 +60,46 @@ val dbModule = module{
 
     single{ provideDb(androidApplication())}
     single{ provideBestsellersDao(get())}
+}
+
+val apiServiceModule = module{
+    fun provideNYTapi(retrofit: Retrofit): BestsellerService{
+        return retrofit.create(BestsellerService::class.java)
+    }
+    single{ provideNYTapi(get())}
+}
+
+val networkModule = module{
+    val connectTimeout: Long = 40
+    val readTimeout: Long = 60
+    //Some test vals for timeouts
+    val testConnectTimeout: Long = 1
+
+    val interceptor = HttpLoggingInterceptor().apply{
+        level = if (BuildConfig.DEBUG) HttpLoggingInterceptor.Level.BODY
+        else HttpLoggingInterceptor.Level.NONE
+    }
+
+    //TODO changed timeouts to 1 day, must find better setting
+    fun provideHttpClient(): OkHttpClient{
+        return OkHttpClient().newBuilder()
+            .addNetworkInterceptor(interceptor)
+            .connectTimeout(connectTimeout, TimeUnit.SECONDS)
+            .readTimeout(readTimeout, TimeUnit.SECONDS)
+            .retryOnConnectionFailure(true)
+            .protocols(listOf(Protocol.HTTP_1_1))
+            .build()
+    }
+
+    fun provideRetrofit(client: OkHttpClient): Retrofit{
+        return Retrofit.Builder()
+            .baseUrl("https://api.nytimes.com/svc/books/v3/lists/")
+            .addCallAdapterFactory(CoroutineCallAdapterFactory())
+            .addConverterFactory(MoshiConverterFactory.create())
+            .client(client)
+            .build()
+    }
+
+    single{ provideHttpClient()}
+    single{ provideRetrofit(get())}
 }

@@ -8,8 +8,10 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="app_background">#222222</color>
-    <color name="light_gray_bg">#CCCCCC</color>
+    <color name="light_gray_bg">#DDFFDD</color>
+    <color name="med_gray_bg">#AACCAA</color>
     <color name="color_accent">#CC2299</color>
+    <color name="color_accent_very_dark">#990255</color>
     <color name="color_accent_dark">#B20F81</color>
     <color name="color_accent_light">#FF66CC</color>
     <color name="color_accent_light_bg">#44FF66CC</color>

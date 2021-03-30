@@ -11,9 +11,9 @@ class CatLookup(private val rv: RecyclerView) : ItemDetailsLookup<Category>() {
         val view = rv.findChildViewUnder(e.x, e.y)
         //this is getting called two or three times for a single longclick,
         // and returns LinearLayout, which can be cast to a ViewHolder object
-        Timber.d("view inside itemDetails lookup: $view")
+        //Timber.d("view inside itemDetails lookup: $view")
         if (view!=null){
-            Timber.d("view in Lookup cast: ${rv.getChildViewHolder(view) as CatChooserListAdapter.CatChooserViewHolder}")
+            //Timber.d("view in Lookup cast: ${rv.getChildViewHolder(view) as CatChooserListAdapter.CatChooserViewHolder}")
             return (rv.getChildViewHolder(view) as CatChooserListAdapter.CatChooserViewHolder).getItemDetails()
         }
         return null

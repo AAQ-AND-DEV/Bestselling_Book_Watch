@@ -5,7 +5,7 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.aaqanddev.bestsellingbookwatch.model.Bestseller
 
-@Database(entities=[Bestseller::class], version = 2, exportSchema = false)
+@Database(entities=[Bestseller::class], version = 4, exportSchema = false)
 @TypeConverters(RoomConverter::class)
 abstract class BestsellerDatabase : RoomDatabase() {
 

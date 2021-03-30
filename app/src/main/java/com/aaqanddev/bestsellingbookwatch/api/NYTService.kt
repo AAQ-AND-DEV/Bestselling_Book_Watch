@@ -21,25 +21,3 @@ interface BestsellerService{
     @GET("names.json")
     suspend fun getCategories(@Query("api-key") apiKey: String) : CategoriesDataTransferWrapper
 }
-
-object NYTService {
-
-    private val interceptor = HttpLoggingInterceptor().apply{
-        level = if (BuildConfig.DEBUG) HttpLoggingInterceptor.Level.BODY
-        else HttpLoggingInterceptor.Level.NONE
-    }
-
-    private val client = OkHttpClient().newBuilder()
-        .addInterceptor(interceptor)
-        .readTimeout(60, TimeUnit.SECONDS)
-        .build()
-
-    private val retrofit = Retrofit.Builder()
-        .baseUrl("https://api.nytimes.com/svc/books/v3/lists/")
-        .addCallAdapterFactory(CoroutineCallAdapterFactory())
-        .addConverterFactory(MoshiConverterFactory.create())
-        .client(client)
-        .build()
-
-    val nytService = retrofit.create(BestsellerService::class.java)
-}

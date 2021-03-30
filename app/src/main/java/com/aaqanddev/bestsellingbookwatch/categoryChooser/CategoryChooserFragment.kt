@@ -25,12 +25,13 @@ import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import kotlinx.coroutines.runBlocking
+import org.koin.android.viewmodel.ext.android.sharedViewModel
 import org.koin.android.viewmodel.ext.android.viewModel
 import timber.log.Timber
 
 class CategoryChooserFragment : Fragment() {
 
-    private val bestsellersViewModel: BestsellersViewModel by viewModel()
+    private val bestsellersViewModel: BestsellersViewModel by sharedViewModel()
     private var categorySharedPrefs: SharedPreferences? = null
 
     //private val binding:
@@ -86,6 +87,14 @@ class CategoryChooserFragment : Fragment() {
 //            Timber.d(watchList.toString())
         }
 
+        bestsellersViewModel.allCategories.observe(viewLifecycleOwner){
+            Timber.d("observer of allCategories in viewmodel triggered: $it")
+            if (it!=null){
+
+            bestsellersViewModel.refreshBestsellers()
+            }
+        }
+
         val binding = FragmentCategoryChooserBinding.inflate(inflater)
         binding.noDataTv.visibility = View.VISIBLE
         binding.categoryRv.visibility = View.GONE
@@ -125,23 +134,34 @@ class CategoryChooserFragment : Fragment() {
 
             tracker!!.addObserver(object : SelectionTracker.SelectionObserver<Category>() {
                 override fun onSelectionChanged() {
+                   super.onSelectionChanged()
                     //val selection = tracker?.selection
 //                val localCatList = catList
 //                val index = tracker?.selection?.last()
 //                val indexInt = index?.toInt()!!
 //                val selectedCat = localCatList?.get(indexInt)
-                    Timber.d("is onSelectionChanged called?")
+                    Timber.d("onSelectionChanged is called")
                     val category = tracker!!.selection.last()
                     category.isWatched = !category.isWatched
                     if (category.isWatched){
+                        Timber.d("cat addition to watchlist called")
                         watchedCategories.add(category)
                     } else{
+                        Timber.d("cat removal from watchlist called")
                         watchedCategories.remove(category)
                     }
                     runBlocking {
+                        //TODO This does not seem to be updating the Db
+                        //to flip the isWatched state to false
+                        Timber.d("updateCategory about to be called")
                         bestsellersViewModel.updateCategory(category)
                     }
-
+                    //TODO change this whole procedure to update viewModel LiveData
+                    //observe elsewhere
+//                    Thread.sleep(5000)
+//                    runBlocking{
+//                        val catFromDb = bestsellersViewModel.fetchSingleCategory(category.encodedName)
+//                    }
 //                val locWatchList = watchList
 //                if (locWatchList != null) {
 //                    if (!locWatchList.contains(index)) {
@@ -179,6 +199,20 @@ class CategoryChooserFragment : Fragment() {
                 }
             })
             catRvAdapter?.setTracker(tracker)
+        }
+
+        binding.clearSelectionFab.setOnClickListener {
+            Timber.d("clear fab called")
+            val cleared = tracker?.clearSelection()
+            Timber.d("tracker cleared: $cleared")
+            for (cat in watchedCategories){
+                cat.isWatched = !cat.isWatched
+                runBlocking{
+                    bestsellersViewModel.updateCategory(cat)
+                }
+            }
+            catRvAdapter!!.notifyDataSetChanged()
+            watchedCategories = emptyList<Category>().toMutableList()
         }
 
         bestsellersViewModel.allCategories.observe(viewLifecycleOwner) {

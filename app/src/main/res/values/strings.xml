@@ -11,4 +11,11 @@
     <string name="about">About</string>
     <string name="choose_categories">Choose Categories</string>
     <string name="no_data">no category data available</string>
+    <string name="clear_selection">clear selection</string>
+    <string name="book_detail_author">by %s</string>
+    <string name="detail_no_review">No Review Found</string>
+    <string name="detail_no_browser_avail">No app found to handle viewing this review. Try downloading a browser</string>
+    <string name="detail_no_buylink_browser_avail">No app found to handle viewing this link. Try downloading a browser</string>
+    <string name="detail_review">NYT Review:\nClick to read review</string>
+    <string name="detail_desc">DESCRIPTION:\n%s</string>
 </resources>

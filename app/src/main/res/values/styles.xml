@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="regular_text_style">
+        <item name="android:gravity">center_horizontal</item>
+        <item name="android:textSize">@dimen/textsize_medium</item>
+        <item name="android:textColor">@color/color_accent_dark</item>
+    </style>
+</resources>

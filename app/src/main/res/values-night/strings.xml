@@ -1,13 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="image_of_bestseller_title_cover">image of ${bestseller.title} cover</string>
+    <string name="app_name">Bestselling Book Watch</string>
+    <string name="image_of_bestseller_title_cover">image of %1$s cover</string>
     <string name="review">Click to Read Review</string>
     <string name="categories_label">Bestseller in these Categories:</string>
     <string name="publisher">Publisher: %1$s</string>
+    <string name="buyLink">Buy on %1$s</string>
     <string name="confirm_selection">Confirm Selection</string>
     <string name="cat_select_instructions">Long-Click a category, to start selecting categories to watch. When you\'re finished, click \'Confirm Selection\'</string>
     <string name="chooser_title">Bestseller Category Chooser</string>
     <string name="about">About</string>
     <string name="choose_categories">Choose Categories</string>
     <string name="no_data">no category data available</string>
+    <string name="clear_selection">clear selection</string>
+    <string name="book_detail_author">by %s</string>
+    <string name="detail_no_review">No Review Found</string>
+    <string name="detail_no_browser_avail">No app found to handle viewing this review. Try downloading a browser</string>
+    <string name="detail_no_buylink_browser_avail">No app found to handle viewing this link. Try downloading a browser</string>
+    <string name="detail_review">NYT Review:\nClick to read review</string>
+    <string name="detail_desc">DESCRIPTION:\n%s</string>
 </resources>
