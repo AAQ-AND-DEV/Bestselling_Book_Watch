@@ -20,7 +20,8 @@ class RoomConverter {
         if (set != null) {
 
             for (el in set) {
-                text.append("$el \t")
+                text.append(el)
+                text.append(",")
             }
         }
         return if (text.isEmpty()) null else text.toString()
@@ -29,9 +30,12 @@ class RoomConverter {
     @TypeConverter
     fun toSet(setText: String): Set<String>? {
         val set = mutableSetOf<String>()
-        val list = setText.split("\t")
+        val list = setText.split(",")
         for (el in list) {
+            if (el.isNotEmpty()){
+
             set.add(el)
+            }
         }
         return if (set.isEmpty()) null else set
     }

@@ -2,6 +2,7 @@ package com.aaqanddev.bestsellingbookwatch.categoryChooser
 
 import android.content.Context
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.ViewGroup
 import androidx.recyclerview.selection.ItemDetailsLookup
 import androidx.recyclerview.selection.SelectionTracker
@@ -14,7 +15,7 @@ import timber.log.Timber
 
 //TODO pass viewModel here, instead of catList?
 class CatChooserListAdapter(
-    private val context: Context
+    private val context: Context, val onClickListener: CategoryChooserOnClickListener
 ): ListAdapter<Category, CatChooserListAdapter.CatChooserViewHolder>(CategoryDiffCallback()){
 
     init{
@@ -44,7 +45,11 @@ class CatChooserListAdapter(
 
     override fun onBindViewHolder(holder: CatChooserViewHolder, position: Int) {
         //Timber.d("current list size: ${currentList.size}")
-        holder.bind(getItem(position))
+        val cat = getItem(position)
+        holder.bind(cat)
+        holder.itemView.setOnClickListener {
+            onClickListener.onClick(cat)
+        }
     }
 
     class CategoryDiffCallback : DiffUtil.ItemCallback<Category>() {
@@ -64,17 +69,27 @@ class CatChooserListAdapter(
             binding.executePendingBindings()
         }
 
-        fun getItemDetails(): ItemDetailsLookup.ItemDetails<Category> =
-            object: ItemDetailsLookup.ItemDetails<Category>(){
-                override fun getPosition(): Int {
-                    return adapterPosition
-                }
-
-                override fun getSelectionKey(): Category {
-                    return getItem(adapterPosition)
-                }
-            }
+//        fun getItemDetails(): ItemDetailsLookup.ItemDetails<Category> =
+//            object: ItemDetailsLookup.ItemDetails<Category>(){
+//                override fun getPosition(): Int {
+//                    return adapterPosition
+//                }
+//
+//                override fun getSelectionKey(): Category {
+//                    return getItem(adapterPosition)
+//                }
+//
+//                override fun inSelectionHotspot(e: MotionEvent): Boolean {
+//                    return true
+//                }
+//            }
 
     }
+
+    class CategoryChooserOnClickListener(val listener: (category: Category)-> Unit){
+        fun onClick(cat: Category) = listener(cat)
+    }
 }
+
+
 

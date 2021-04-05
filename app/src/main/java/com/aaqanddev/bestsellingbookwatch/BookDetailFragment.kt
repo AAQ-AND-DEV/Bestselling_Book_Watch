@@ -43,6 +43,16 @@ class BookDetailFragment : Fragment() {
         for (cat in categories){
         val textView = TextView(requireContext())
             textView.text = cat
+            val layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+            textView.layoutParams = layoutParams
+            val textViewMarginParams = textView.layoutParams as ViewGroup.MarginLayoutParams
+            textViewMarginParams.setMargins(
+                resources.getDimension(R.dimen.margin_tiny).toInt(),
+                resources.getDimension(R.dimen.margin_tiny).toInt(),
+                resources.getDimension(R.dimen.margin_tiny).toInt(),
+                0,
+            )
+            textView.setTextColor(resources.getColor(R.color.color_accent_dark))
             categoriesLinLo.addView(textView)
             //TODO polish/post add onClick to send to listView of that category
         }

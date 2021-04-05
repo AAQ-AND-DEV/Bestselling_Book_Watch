@@ -2,6 +2,7 @@ package com.aaqanddev.bestsellingbookwatch.main
 
 import android.app.Application
 import androidx.lifecycle.*
+import androidx.recyclerview.selection.Selection
 import com.aaqanddev.bestsellingbookwatch.data.AppResult
 import com.aaqanddev.bestsellingbookwatch.data.BestsellerDataSource
 import com.aaqanddev.bestsellingbookwatch.model.Bestseller
@@ -35,7 +36,39 @@ class BestsellersViewModel(
         get() = _allCategories
 
     private val watchedCategories = Transformations.map(repository.watchedCategories){
+        Timber.d("watchedCats from repository.watchedCategories: $it")
         it
+    }
+
+//    private val _selection = MutableLiveData<Selection<Category>>()
+//    val selection: LiveData<Selection<Category>>
+//        get() = _selection
+//
+//    fun setSelection(catSelection: Selection<Category>){
+//        _selection.value = catSelection
+//    }
+
+    private val _watchedChooserCategories= MutableLiveData<MutableList<Category>>()
+    val watchedChooserCategories: LiveData<MutableList<Category>>
+        get() = _watchedChooserCategories
+
+    fun addCatToChooserCats(cat: Category){
+        val watchedCatsList = _watchedChooserCategories.value
+        Timber.d("cats in viewModel: $watchedCatsList")
+        if (!watchedCatsList?.contains(cat)!!){
+            watchedCatsList.add(cat)
+
+        _watchedChooserCategories.value = watchedCatsList!!
+        Timber.d("cats in viewModel after add: ${_watchedChooserCategories.value}")
+        }
+        }
+    fun removeCatFromChooserCats(cat: Category){
+        val watchedCatsList = _watchedChooserCategories.value
+        Timber.d("cats in viewModel: $watchedCatsList")
+        val itemRemoved = watchedCatsList?.remove(cat)
+        Timber.d("cat removed: $itemRemoved")
+        _watchedChooserCategories.value = watchedCatsList!!
+        Timber.d("cats in viewModel after remove: ${_watchedChooserCategories.value}")
     }
 
     init {
@@ -49,6 +82,7 @@ class BestsellersViewModel(
 //        observedCategories.observeForever(){
 //            Timber.d("observedCategories value change. logged here")
 //        }
+        _watchedChooserCategories.value = mutableListOf()
     }
 
     //TODO possibly modify this method

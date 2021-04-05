@@ -6,7 +6,7 @@
     <string name="buyLink">Buy on %1$s</string>
     <string name="publisher">Publisher: %1$s</string>
     <string name="confirm_selection">Confirm Selection</string>
-    <string name="cat_select_instructions">Long-Click a category to start selecting categories to watch. When you\'re finished, click \'Confirm Selection\'</string>
+    <string name="cat_select_instructions">Click a category to start selecting up to 7 categories to watch. When you\'re finished, click \'Confirm Selection\'</string>
     <string name="chooser_title">Bestseller Category Chooser</string>
     <string name="about">About</string>
     <string name="choose_categories">Choose Categories</string>
@@ -18,4 +18,5 @@
     <string name="detail_no_buylink_browser_avail">No app found to handle viewing this link. Try downloading a browser</string>
     <string name="detail_review">NYT Review:\nClick to read review</string>
     <string name="detail_desc">DESCRIPTION:\n%s</string>
+    <string name="cat_chooser_size">%s of 7 Categories\nSelected</string>
 </resources>

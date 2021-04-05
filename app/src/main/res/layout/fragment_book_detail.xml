@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--TODO add styling to this stuff (and make sure desc doesn't go off screen)-->
+<!--TODO (programatically adjust margin of categories)-->
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
@@ -15,10 +15,15 @@
         android:layout_width="match_parent"
         android:background="@color/med_gray_bg">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <androidx.constraintlayout.motion.widget.MotionLayout
+            android:id="@+id/motion_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/light_gray_bg"
+            app:layoutDescription="@xml/detail_motion_layout"
+            app:motionDebug="SHOW_PATH"
+            tools:showIn="@layout/activity_main"
+            tools:context=".main.MainActivity"
             >
 
             <ImageView
@@ -29,9 +34,7 @@
                 android:id="@+id/detail_cover_img"
                 android:background="@color/med_gray_bg"
                 android:contentDescription="@{@string/image_of_bestseller_title_cover(bestseller.title)}"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent" />
+                 />
 
             <TextView
                 android:layout_width="match_parent"
@@ -51,9 +54,6 @@
                 android:id="@+id/detail_author"
                 tools:text="author"
                 android:text="@{@string/book_detail_author(bestseller.author)}"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/detail_title"
                 style="@style/regular_text_style" />
 
             <TextView
@@ -67,6 +67,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_medium"
                 android:id="@+id/categories_label"
                 style="@style/regular_text_style"
                 android:text="@string/categories_label"
@@ -77,6 +78,8 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/categories_linlo"
                 android:orientation="vertical"
+                android:gravity="center_horizontal"
+                android:layout_marginBottom="@dimen/margin_medium"
                 app:layout_constraintTop_toBottomOf="@id/categories_label"
                 app:layout_constraintBottom_toTopOf="@id/desc_review_flow"/>
 
@@ -123,7 +126,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@color/med_gray_bg"
-                android:layout_marginTop="@dimen/margin_small"
+                android:layout_marginTop="@dimen/margin_medium"
                 android:layout_marginBottom="@dimen/margin_medium"
                 android:layout_marginStart="@dimen/margin_big"
                 android:layout_marginEnd="@dimen/margin_big"
@@ -149,6 +152,6 @@
                         android:visibility="invisible" />
                 </androidx.appcompat.widget.LinearLayoutCompat>
             </HorizontalScrollView>
-        </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.constraintlayout.motion.widget.MotionLayout>
     </ScrollView>
 </layout>

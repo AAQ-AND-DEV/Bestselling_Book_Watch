@@ -29,7 +29,9 @@ class BestsellersRepository(
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : BestsellerDataSource {
 
-    override val watchedCategories = catDao.getWatchedCategories()
+    override val watchedCategories =
+        catDao.getWatchedCategories()
+
 
     //TODO should I iterate over all possible categories?
     //or should I pass in a category here?
@@ -51,12 +53,15 @@ class BestsellersRepository(
                 //val locCats = cats.value
                 //if (locCats != null) {
                 for (cat in cats) {
+                    //TODO currently always fetching result...
+                        //should only be fetched when out of date
+                            //but i think refreshBestsellers was only called when stale
                     val result = context.applicationContext?.resources?.getString(
                         R.string.nyt_key
                     )?.let { api.getBestsellers("current", cat.encodedName, it) }
 
                     if (result != null) {
-                        val category = result.results?.listName
+                        val category = result.results?.displayName
 
                         Timber.d("category in refreshBestsllers is $category")
                         val books = result.results?.books
@@ -76,21 +81,19 @@ class BestsellersRepository(
 
                                         Timber.d("currentBookFromDb in refreshBest: $currentBookFromDb")
                                         if (currentBookFromDb != null) {
-
-                                            if (currentBookFromDb.categories != null) {
+                                            val currCats = currentBookFromDb.categories
+                                            if (currCats != null) {
                                                 if (category.isNotEmpty()) {
                                                     Timber.d("cat:|${category.trim()}|")
-                                                    val currCats = currentBookFromDb.categories
-                                                    if (currCats!=null){
-                                                        if (!currCats.contains(category.trim())){
 
-                                                    val catAdded = currCats.add(category.trim())
-                                                    Timber.d("catAdded within iteration over domainBooks in refreshBestsellers: $catAdded")
-                                                        }
+                                                    if (!currCats.contains(category.trim())){
+
+                                                val catAdded = currCats.add(category.trim())
+                                                Timber.d("catAdded within iteration over domainBooks in refreshBestsellers: $catAdded")
                                                     }
                                                 }
                                             } else {
-                                                Timber.d("currentBookFromDb categories is null")
+                                                Timber.d("currentCats is null")
                                                 if (category.isNotEmpty()) {
 
                                                     val newSetOfCats = mutableSetOf(category.trim())
@@ -100,27 +103,30 @@ class BestsellersRepository(
                                             Timber.d("currentBookFromDb not null, added to domainBooks")
                                             domainBooks[i] = currentBookFromDb
                                         } else {
-                                            //TODO asDomainModel currently instantiates the mutableSet...
+                                            //TODO currentBook is null, so adding new set with category
                                             Timber.d("currentBookFromDb null, do I need to add the mutableSet to the domainBook?")
-
+                                            domainBooks[i].categories = mutableSetOf(category.trim())
                                         }
                                     } else {
                                         Timber.d("isbn10 is null")
                                     }
                                 }
+                                domainBooks.let {
+                                    Timber.d("domain books not null, adding to db")
+                                    dao.addAll(it)
+                                    //domainBooksResult = AppResult.Success(it)
+                                    //TODO this should only happen if the books have been added.
+                                    addDateUpdatedToSharedPrefs(context, System.currentTimeMillis())
+                                }
                             }
-                            domainBooks?.let {
-                                Timber.d("domain books not null, adding to db")
-                                dao.addAll(it)
-                                //domainBooksResult = AppResult.Success(it)
-                                //TODO this should only happen if the books have been added.
-                                addDateUpdatedToSharedPrefs(context, System.currentTimeMillis())
-                            }
+                            //TODO else domainBooks is null, repeat fetch via network?
+
 
                         }
 
 
                     }
+                    //TODO else api result is null
 
                 }
 
@@ -206,6 +212,8 @@ class BestsellersRepository(
             // category?.value?.displayName
             Timber.d(displayName)
             if (displayName != null) {
+                //val modDisplayName = displayName.replace("&", "and")
+                //Timber.d(modDisplayName)
                 return@withContext getBestsellersFromCategory(displayName)
             } else {
                 return@withContext null

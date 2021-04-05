@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<MotionScene xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <Transition
+        app:constraintSetStart="@id/start"
+        app:constraintSetEnd="@id/end"
+        app:duration="3000"
+        app:autoTransition="animateToEnd"
+        >
+    </Transition>
+
+    <ConstraintSet  android:id="@+id/start">
+        <Constraint android:id="@id/detail_cover_img"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:alpha="0.0"
+            />
+        <Constraint android:id="@id/detail_title"
+            app:layout_constraintTop_toBottomOf="@id/detail_cover_img"
+            app:layout_constraintStart_toEndOf="parent"/>
+
+        <Constraint android:id="@id/detail_author"
+            app:layout_constraintBottom_toTopOf="@id/detail_publisher"
+
+        app:layout_constraintTop_toBottomOf="@id/detail_title"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="parent"
+            />
+    </ConstraintSet>
+    <ConstraintSet android:id="@+id/end">
+        <Constraint android:id="@id/detail_cover_img"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:alpha="1.0"
+            />
+        <Constraint android:id="@+id/detail_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/detail_cover_img"
+            app:layout_constraintBottom_toTopOf="@id/detail_author"
+
+            />
+        <Constraint android:id="@id/detail_author"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/detail_title"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            />
+
+    </ConstraintSet>
+
+</MotionScene>

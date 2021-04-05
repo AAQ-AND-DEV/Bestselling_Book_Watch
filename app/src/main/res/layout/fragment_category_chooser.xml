@@ -1,9 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-
+        <variable
+            name="bviewModel"
+            type="com.aaqanddev.bestsellingbookwatch.main.BestsellersViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -17,9 +20,22 @@
             android:layout_margin="@dimen/margin_medium"
             android:text="@string/chooser_title"
             android:textSize="@dimen/textsize_large"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/cat_select_count"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/cat_select_count"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="2"
+            android:layout_marginEnd="@dimen/margin_medium"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="@id/cat_select_title"
+            app:layout_constraintStart_toEndOf="@id/cat_select_title"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:text="@{@string/cat_chooser_size(bviewModel.watchedChooserCategories.size())}"
+            />
 
         <TextView
             android:id="@+id/cat_select_instruct"
@@ -43,12 +59,6 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toBottomOf="@id/cat_select_instruct" />
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/category_rv"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            app:layout_constraintBottom_toTopOf="@id/confirm_selection_fab"
-            app:layout_constraintTop_toBottomOf="@id/cat_select_instruct" />
         <!--
         <TextView
             android:layout_width="wrap_content"
@@ -59,6 +69,15 @@
             app:layout_constraintTop_toTopOf="parent"
             />
 -->
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/category_rv"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toTopOf="@id/confirm_selection_fab"
+            app:layout_constraintTop_toBottomOf="@id/cat_select_instruct"
+            tools:layout_editor_absoluteX="-31dp" />
+
         <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
             android:id="@+id/clear_selection_fab"
             android:layout_width="wrap_content"
