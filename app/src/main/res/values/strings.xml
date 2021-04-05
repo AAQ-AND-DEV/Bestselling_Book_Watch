@@ -19,4 +19,7 @@
     <string name="detail_review">NYT Review:\nClick to read review</string>
     <string name="detail_desc">DESCRIPTION:\n%s</string>
     <string name="cat_chooser_size">%s of 7 Categories\nSelected</string>
+    <string name="list_update_notification_channel_id" translatable="false">list update notific channel</string>
+    <string name="notification_title">Bestsellers Lists Updated</string>
+    <string name="list_update_text">The content of one or more watched categories has been updated</string>
 </resources>

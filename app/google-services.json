@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "209100030348",
+    "project_id": "bestsellerswatch",
+    "storage_bucket": "bestsellerswatch.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:209100030348:android:31f13a67502f7614b396a9",
+        "android_client_info": {
+          "package_name": "com.aaqanddev.bestsellingbookwatch"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "209100030348-8nl7d6su9co5cq91f6hidt85dnutjed0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAI-gbd16OyWKWyQcQXnJy0kN0BBWWN3Ys"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "209100030348-8nl7d6su9co5cq91f6hidt85dnutjed0.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
