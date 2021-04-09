@@ -74,6 +74,7 @@
             android:id="@+id/category_rv"
             android:layout_width="match_parent"
             android:layout_height="0dp"
+            android:background="@color/med_gray_bg"
             app:layout_constraintBottom_toTopOf="@id/confirm_selection_fab"
             app:layout_constraintTop_toBottomOf="@id/cat_select_instruct"
             tools:layout_editor_absoluteX="-31dp" />

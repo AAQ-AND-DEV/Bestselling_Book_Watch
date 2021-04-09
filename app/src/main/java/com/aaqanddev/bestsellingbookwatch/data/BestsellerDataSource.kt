@@ -17,6 +17,6 @@ interface BestsellerDataSource {
 
     suspend fun getCategories(): AppResult<List<Category>>?
     suspend fun updateCategory(cat: Category)
-    suspend fun getCategory(name: String): AppResult<Category>?
+    //suspend fun getCategory(name: String): AppResult<Category>?
     //suspend fun getWatchedCategories(): LiveData<List<Category>>?
 }

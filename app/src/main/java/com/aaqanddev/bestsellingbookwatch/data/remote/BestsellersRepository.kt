@@ -33,29 +33,23 @@ class BestsellersRepository(
         catDao.getWatchedCategories()
 
 
-    //TODO should I iterate over all possible categories?
-    //or should I pass in a category here?
     //api Terms say i can't maintain data longer than 24 hrs
-    //so I should probably make sure to refresh all the bestsellers
+    //so refreshing all watched bestseller categories
     override suspend fun refreshBestsellers(categories: List<Category>?) {
-
-        //TEST to see if empty string added in this casting
-        //Timber.d("emptySet:${emptySet<String>() as MutableSet<String>}")
 
         withContext(dispatcher) {
             Timber.d("refresh videos called")
-            //TODO get all categories
+            //watched categories are passed in
             val cats = categories
+            //until a remote data store is set up, cannot fetch all categories, b/c of api terms
             //getCategoriesAsync()
             Timber.d("cats in refreshBestsellers: ${cats}")
-            //iterate over each one and add to Db
+            //iterate over watchedCategories, fetch list, and add to Db
             if (cats != null) {
                 //val locCats = cats.value
                 //if (locCats != null) {
                 for (cat in cats) {
-                    //TODO currently always fetching result...
-                        //should only be fetched when out of date
-                            //but i think refreshBestsellers was only called when stale
+                    //TODO currently always fetching result...ensure refreshBestsellers is only called when stale
                     val result = context.applicationContext?.resources?.getString(
                         R.string.nyt_key
                     )?.let { api.getBestsellers("current", cat.encodedName, it) }
@@ -134,6 +128,47 @@ class BestsellersRepository(
         }
     }
 
+    suspend fun processFetchedList(category: String, domainBooks: MutableList<Bestseller>): List<Bestseller> {
+
+        for ((i, book) in domainBooks.withIndex()) {
+            if (book.isbn10 != null) {
+                val currentBookFromDb = getBestsellerByISBN(book.isbn10!!)
+
+                Timber.d("currentBookFromDb in refreshBest: $currentBookFromDb")
+                if (currentBookFromDb != null) {
+                    val currCats = currentBookFromDb.categories
+                    if (currCats != null) {
+                        if (category.isNotEmpty()) {
+                            Timber.d("cat:|${category.trim()}|")
+
+                            if (!currCats.contains(category.trim())){
+
+                                val catAdded = currCats.add(category.trim())
+                                Timber.d("catAdded within iteration over domainBooks in refreshBestsellers: $catAdded")
+                            }
+                        }
+                    } else {
+                        Timber.d("currentCats is null")
+                        if (category.isNotEmpty()) {
+
+                            val newSetOfCats = mutableSetOf(category.trim())
+                            currentBookFromDb.categories = newSetOfCats
+                        }
+                    }
+                    Timber.d("currentBookFromDb not null, added to domainBooks")
+                    domainBooks[i] = currentBookFromDb
+                } else {
+                    //TODO currentBook is null, so adding new set with category
+                    Timber.d("currentBookFromDb null, do I need to add the mutableSet to the domainBook?")
+                    domainBooks[i].categories = mutableSetOf(category.trim())
+                }
+            } else {
+                Timber.d("isbn10 is null")
+            }
+        }
+        return domainBooks
+    }
+
     suspend fun getCategoriesAsync(): LiveData<List<Category>> {
         return withContext(dispatcher) {
 
@@ -141,11 +176,6 @@ class BestsellersRepository(
 
         }
     }
-
-//    override suspend fun getWatchedCategories(): LiveData<List<Category>> {
-//        return catDao.getWatchedCategories()
-//
-//    }
 
     suspend fun getBestsellerByISBN(isbn10: String): Bestseller? {
         return withContext(dispatcher) {
@@ -157,52 +187,11 @@ class BestsellersRepository(
 
     override suspend fun getBestsellers(encodedListName: String?): List<Bestseller>? {
 
-        var domainBooksResult: AppResult<List<Bestseller>>? = null
+        //var domainBooksResult: AppResult<List<Bestseller>>? = null
         val domainBooks: List<Bestseller>?
 
-        //TODO make the db the default retrieval strategy?
-//        Timber.d("networkAvailability: ${isNetworkAvailable(context)}")
-//        if (isNetworkAvailable(context)) {
+        //db the default retrieval strategy?
 //
-//            try {
-//
-//                Timber.d("starting bestsellers fetch")
-//                val result = context.applicationContext?.resources?.getString(
-//                    R.string.nyt_key
-//                )?.let {
-//                    api.getBestsellers(
-//                        "current", encodedListName!!,
-//                        it
-//                    )
-//                }
-//                //val text = StringBuilder()
-//                if (result != null) {
-//                    val category = result.results?.listName
-//
-//                    Timber.d("category is $category")
-//                    val books = result.results?.books
-//                    //TODO before next one actually here is where the categories are being added
-//                    //
-//                    domainBooks = category?.let { books?.asDomainModel(it) }
-//
-//                    withContext(dispatcher) {
-//                        //TODO should probably retrieve each book, to add the category to the category Set, if applicable
-//                        //Timber.d("domainBooks before attempt to addAll: $domainBooks")
-//                        domainBooks?.let {
-//                            dao.addAll(it)
-//                            domainBooksResult = AppResult.Success(it)
-//                        }
-//
-//                    }
-//                } else {
-//                    Timber.e("result is null")
-//                    domainBooksResult = AppResult.Error("result is null")
-//                }
-//
-//            } catch (e: Exception) {
-//                domainBooksResult = AppResult.Error(e.localizedMessage)
-//            }
-//        } else {
         return withContext(dispatcher) {
 
             //val data = dao.getBestsellers()
@@ -214,30 +203,82 @@ class BestsellersRepository(
             if (displayName != null) {
                 //val modDisplayName = displayName.replace("&", "and")
                 //Timber.d(modDisplayName)
-                return@withContext getBestsellersFromCategory(displayName)
-            } else {
+                val bookList = getBestsellersFromCategory(displayName)
+                bookList as List<Bestseller>
+                if (bookList.isNotEmpty()){
+
+                    return@withContext bookList
+                }
+
+                else{
+                    Timber.d(" db empty, fetching list -- networkAvailability: ${isNetworkAvailable(context)}")
+        if (isNetworkAvailable(context)) {
+
+            try {
+
+                Timber.d("starting bestsellers fetch")
+                val result = context.applicationContext?.resources?.getString(
+                    R.string.nyt_key
+                )?.let {
+                    api.getBestsellers(
+                        "current", encodedListName!!,
+                        it
+                    )
+                }
+                //val text = StringBuilder()
+                if (result != null) {
+                    val category = result.results?.displayName
+
+                    Timber.d("category in hot fetch is $category")
+                    val books = result.results?.books
+
+                    domainBooks = category?.let { books?.asDomainModel(it) }
+
+                    if (domainBooks!=null){
+
+
+                        return@withContext withContext(dispatcher) {
+                            //TODO should probably retrieve each book, to add the category to the category Set, if applicable
+                            //Timber.d("domainBooks before attempt to addAll: $domainBooks")
+                            val processedBooks : List<Bestseller>? = if (category != null) {
+                                processFetchedList(category, domainBooks.toMutableList())
+                            } else{
+                                null
+                            }
+
+
+                            processedBooks?.let {
+                                dao.addAll(processedBooks)
+                                return@let processedBooks
+                            }
+
+                        }
+                    }
+                } else {
+                    Timber.e("result from api fetch is null")
+                    //TODO trigger Error property Toast
+
+                    return@withContext null
+                }
+
+            } catch (e: Exception) {
+                //TODO trigger error propety toast
+                Timber.e(e.localizedMessage)
                 return@withContext null
             }
-            //val displayName = "Hardcover Fiction"
-//                val data = displayName?.let { getBestsellersByCat(it) }
-//                Timber.d(data?.value.toString())
-//                if (data?.value?.isNotEmpty() == true) {
-//                    Timber.d("data from db by category: $data")
-//                    domainBooksResult = AppResult.Success(data.value!!)
-//
-//                } else {
-//                    Timber.e("no data found in db")
-//                    domainBooksResult = AppResult.Error("no data found in db for that cat")
-//                }
+            }
         }
-        //}
+            } else {
+                Timber.d("displayName is null")
+                return@withContext null
+            }
 
-        //Timber.d("before return: current value of ${(domainBooksResult as AppResult.Success).data}")
-//        Timber.d(domainBooksResult.toString())
-//        return domainBooksResult
+            return@withContext null
+
+        }
     }
 
-    suspend fun getBestsellersFromCategory(encodedName: String): List<Bestseller> {
+    private suspend fun getBestsellersFromCategory(encodedName: String): List<Bestseller> {
         return withContext(dispatcher) {
             async {
                 dao.getBestsellersByCat(encodedName)
@@ -311,6 +352,7 @@ class BestsellersRepository(
                 categoriesResult = AppResult.Error(e.localizedMessage)
             }
         } else {
+            //TODO need to put this first...
             withContext(dispatcher) {
                 val categories = catDao.getCategories()
 
@@ -336,22 +378,7 @@ class BestsellersRepository(
         }
     }
 
-    override suspend fun getCategory(name: String): AppResult<Category>? {
-        val catRes: AppResult<Category>? = null
-        //TODO possibly implement this?
-//        withContext(dispatcher){
-//            var res: LiveData<Category>
-//
-//
-//                res = catDao.getCategory(name)
-//
-//            catRes =  AppResult.Success(res.value as Category)
-//        }
-//        Timber.d("catRes in getCategory of Repo: $catRes" )
-        return catRes
-    }
-
-    suspend fun getDisplayNameFromCategory(encodedName: String): String {
+    private suspend fun getDisplayNameFromCategory(encodedName: String): String {
         return withContext(dispatcher) {
             async {
                 catDao.getCategory(encodedName)

@@ -60,10 +60,11 @@ class BestsellersFragment : Fragment() {
 
         Timber.d("onCreateView called")
         val watchedCatsString = categorySharedPrefs?.getString(WATCHED_CATS_KEY_SHARED_PREFS,"")
-        bestsellersViewModel.allCategories.observe(viewLifecycleOwner){
-            Timber.d("observer of allCategories in viewmodel triggered")
-            bestsellersViewModel.refreshBestsellers()
-        }
+//        bestsellersViewModel.allCategories.observe(viewLifecycleOwner){
+//            Timber.d("observer of allCategories in viewmodel triggered")
+//            //TODO re-enable this refresh after testing empty db fetch
+//            //bestsellersViewModel.refreshBestsellers()
+//        }
         if (watchedCatsString.isNullOrEmpty()){
             this.findNavController().navigate(R.id.action_bestsellersFragment_to_categoryChooserFragment)
         }
@@ -184,7 +185,7 @@ class BestsellersFragment : Fragment() {
 
 
 
-        bestsellersViewModel.bestsellersToDisplay?.observe(viewLifecycleOwner) {
+        bestsellersViewModel.bestsellersToDisplay.observe(viewLifecycleOwner) {
             Timber.d("observer, bestsellers list to display: $it")
             adapter.submitList(it)
             adapter.notifyDataSetChanged()

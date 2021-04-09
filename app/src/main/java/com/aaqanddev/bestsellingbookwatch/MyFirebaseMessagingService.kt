@@ -17,14 +17,6 @@ class MyFirebaseMessagingService: FirebaseMessagingService() {
      */
     // [START receive_message]
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
-        // Not getting messages here? See why this may be: https://goo.gl/39bRNJ
-        Timber.d( "From: ${remoteMessage.from}")
-
-        // Check if message contains a data payload.
-        remoteMessage.data.let {
-            Timber.d("Message data payload: " + remoteMessage.data)
-        }
-
 
         // Check if message contains a notification payload, if so call sendNotification.
         remoteMessage.notification?.let {
@@ -69,9 +61,5 @@ class MyFirebaseMessagingService: FirebaseMessagingService() {
     private fun sendNotification(messageBody: String) {
         val notificationManager = ContextCompat.getSystemService(applicationContext, NotificationManager::class.java) as NotificationManager
         notificationManager.sendNotification(messageBody, applicationContext)
-    }
-
-    companion object {
-        private const val TAG = "MyFirebaseMsgService"
     }
 }

@@ -4,7 +4,7 @@
     <Transition
         app:constraintSetStart="@id/start"
         app:constraintSetEnd="@id/end"
-        app:duration="3000"
+        app:duration="1500"
         app:autoTransition="animateToEnd"
         >
     </Transition>

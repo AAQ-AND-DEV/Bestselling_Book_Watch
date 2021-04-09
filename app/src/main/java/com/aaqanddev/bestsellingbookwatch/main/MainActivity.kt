@@ -1,5 +1,9 @@
 package com.aaqanddev.bestsellingbookwatch.main
 
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.graphics.Color
+import android.os.Build
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.aaqanddev.bestsellingbookwatch.ACTIVE_CAT_SHARED_PREFS_KEY
@@ -32,6 +36,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
 
+        createChannel(getString(R.string.list_update_notification_channel_id), getString(R.string.list_update_notification_channel_name))
 
 
 
@@ -39,6 +44,30 @@ class MainActivity : AppCompatActivity() {
 
 
 
+
+    }
+    private fun createChannel(channelId: String, channelName: String) {
+        // declare a channel
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val notificationChannel = NotificationChannel(
+                channelId,
+                channelName,
+                NotificationManager.IMPORTANCE_HIGH
+            )
+                .apply{
+                    setShowBadge(false)
+                }
+            // configure channel
+            notificationChannel.enableLights(true)
+            notificationChannel.lightColor = Color.RED
+            notificationChannel.enableVibration(false)
+            notificationChannel.description = "Bestseller Lists Update"
+            //create channel in NotificationManager
+            val notificMan = this.getSystemService(
+                NotificationManager::class.java
+            ) as NotificationManager
+            notificMan.createNotificationChannel(notificationChannel)
+        }
 
     }
 }

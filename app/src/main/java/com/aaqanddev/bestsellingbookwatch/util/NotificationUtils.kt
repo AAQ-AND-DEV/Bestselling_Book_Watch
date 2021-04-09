@@ -5,9 +5,13 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.graphics.BitmapFactory
+import android.graphics.Color.rgb
+import android.os.Build
 import androidx.core.app.NotificationCompat
 import com.aaqanddev.bestsellingbookwatch.R
 import com.aaqanddev.bestsellingbookwatch.main.MainActivity
+import timber.log.Timber
+
 
 private val NOTIFICATION_ID = 0
 private val REQUEST_CODE = 0
@@ -32,9 +36,9 @@ fun NotificationManager.sendNotification(messageBody: String, applicationContext
         PendingIntent.FLAG_UPDATE_CURRENT
     )
     // add style
-    val logoImage = BitmapFactory.decodeResource(
-        applicationContext.resources, R.mipmap.bw_logo
-    )
+//    val logoImage = BitmapFactory.decodeResource(
+//        applicationContext.resources, R.mipmap.bw_logo
+//    )
     val regStyle = NotificationCompat.BigTextStyle()
 
     // Build the notification
@@ -45,10 +49,16 @@ fun NotificationManager.sendNotification(messageBody: String, applicationContext
     )
 
         // set title, text and icon to builder
-        .setSmallIcon(R.mipmap.bw_logo)
+        .setSmallIcon(getNotificationSmallIcon())
+        .setColor(rgb(247, 51, 165))
         .setContentTitle(applicationContext.getString(R.string.notification_title))
         .setContentText(messageBody)
-
+        .setLargeIcon(
+            BitmapFactory.decodeResource(
+                applicationContext.resources,
+                R.mipmap.bw_logo
+            )
+        )
         // set content intent
         .setContentIntent(contentPendingIntent)
         .setAutoCancel(true)
@@ -56,8 +66,15 @@ fun NotificationManager.sendNotification(messageBody: String, applicationContext
         .setStyle(regStyle)
         // set priority
         .setPriority(NotificationCompat.PRIORITY_HIGH)
+    Timber.d("about to call notify, builder: $builder")
     // call notify
     notify(NOTIFICATION_ID, builder.build())
+}
+
+//helper to provide silhouette for smallIcon OS > Lolli
+private fun getNotificationSmallIcon(): Int {
+    val useWhiteIcon = Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP
+    return if (useWhiteIcon) R.drawable.ic_bw_logo_transp else R.mipmap.bw_logo
 }
 
 //  Cancel all notifications

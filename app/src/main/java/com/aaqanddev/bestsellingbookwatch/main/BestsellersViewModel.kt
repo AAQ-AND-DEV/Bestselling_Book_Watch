@@ -8,6 +8,7 @@ import com.aaqanddev.bestsellingbookwatch.data.BestsellerDataSource
 import com.aaqanddev.bestsellingbookwatch.model.Bestseller
 import com.aaqanddev.bestsellingbookwatch.model.Category
 import com.aaqanddev.bestsellingbookwatch.util.getUpdatedDateFromSharedPrefs
+import com.aaqanddev.bestsellingbookwatch.util.standardizeOrder
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import org.threeten.bp.LocalDateTime
@@ -101,11 +102,11 @@ class BestsellersViewModel(
         }
     }
 
-    suspend fun fetchSingleCategory(name: String): Category {
-        return viewModelScope.async {
-            (repository.getCategory(name) as AppResult.Success).data
-        }.await()
-    }
+//    suspend fun fetchSingleCategory(name: String): Category {
+//        return viewModelScope.async {
+//            (repository.getCategory(name) as AppResult.Success).data
+//        }.await()
+//    }
 
     fun fetchCategoriesList() {
         viewModelScope.launch {
@@ -147,6 +148,7 @@ class BestsellersViewModel(
             val result = repository.getBestsellers(activeList.value)
             //TODO incorporate showLoading pattern
             if (result != null) {
+                result.standardizeOrder()
                 _bestsellersToDisplay.value = result!!
 //                when (result) {
 //                    is AppResult.Success<*> -> {
