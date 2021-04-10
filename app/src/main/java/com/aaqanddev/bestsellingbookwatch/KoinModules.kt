@@ -80,7 +80,6 @@ val networkModule = module{
         else HttpLoggingInterceptor.Level.NONE
     }
 
-    //TODO changed timeouts to 1 day, must find better setting
     fun provideHttpClient(): OkHttpClient{
         return OkHttpClient().newBuilder()
             .addNetworkInterceptor(interceptor)
