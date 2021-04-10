@@ -1,35 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_height="match_parent" android:layout_width="match_parent" android:background="@color/color_accent_light_bg">
 <LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/med_gray_bg"
+    >
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/about_title"
-        android:text="Bestselling Book Watch"
+        android:text="@string/app_name"
         android:textSize="@dimen/textsize_large"
         android:layout_margin="@dimen/margin_big"
-
+        android:background="@color/light_gray_bg"
+        android:padding="@dimen/margin_small"
         />
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/about_details"
-        android:text="An app for viewing bestselling lists of book from The New York Times Best Sellers lists. This app is not endorsed or affiliated with The New York Times"
+        android:text="@string/about_details"
         android:textSize="@dimen/textsize_medium"
         android:layout_margin="@dimen/margin_big"
+        android:background="@color/light_gray_bg"
+        android:padding="@dimen/margin_small"
         />
     <ImageView
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         android:layout_margin="@dimen/margin_big"
         android:id="@+id/about_myt_logo"
         android:src="@drawable/poweredby_nytimes_200a"
         android:layout_gravity="center|bottom"
         android:layout_weight="1"
-        />
+        android:contentDescription="@string/new_york_times_logo" />
 </LinearLayout>
-</FrameLayout>

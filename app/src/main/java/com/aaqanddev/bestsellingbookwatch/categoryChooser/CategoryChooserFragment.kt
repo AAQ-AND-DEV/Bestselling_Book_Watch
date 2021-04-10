@@ -2,6 +2,11 @@ package com.aaqanddev.bestsellingbookwatch.categoryChooser
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.net.ConnectivityManager
+import android.net.Network
+import android.net.NetworkCapabilities
+import android.net.NetworkRequest
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -18,6 +23,7 @@ import com.aaqanddev.bestsellingbookwatch.databinding.FragmentCategoryChooserBin
 import com.aaqanddev.bestsellingbookwatch.main.BestsellersViewModel
 import com.aaqanddev.bestsellingbookwatch.model.Category
 import com.aaqanddev.bestsellingbookwatch.util.getWatchedCatsFromSharedPrefs
+import com.aaqanddev.bestsellingbookwatch.util.toast
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
@@ -29,19 +35,18 @@ class CategoryChooserFragment : Fragment() {
 
     private val bestsellersViewModel: BestsellersViewModel by sharedViewModel()
     private var categorySharedPrefs: SharedPreferences? = null
-
-    //private val binding:
-    //private var tracker: SelectionTracker<Category>? = null
-    private lateinit var catList: MutableList<Category>
     private var catRvAdapter: CatChooserListAdapter? = null
-
-    //TODO trying a flag to prevent setItemsSelected from triggering change in onSelectionChanged
-    //private var setItemsFlag: Boolean = false
-
-    //private var watchList: MutableList<Long>? = null
-    //TODO move this to the viewModel?
-    //private lateinit var watchedCategories: MutableList<Category>
     private lateinit var catRv: RecyclerView
+    private val networkCallback = object : ConnectivityManager.NetworkCallback(){
+        override fun onAvailable(network: Network) {
+            //Network newly available, trigger cat fetch
+            bestsellersViewModel.fetchCategoriesList()
+        }
+
+        override fun onLost(network: Network) {
+            //do nothing
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -49,6 +54,15 @@ class CategoryChooserFragment : Fragment() {
             CATEGORY_SHARED_PREFS,
             Context.MODE_PRIVATE
         )
+
+        val connectivityManager = requireContext().getSystemService(Context.CONNECTIVITY_SERVICE)
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N){
+            (connectivityManager as ConnectivityManager).registerDefaultNetworkCallback(networkCallback)
+        } else{
+            val request = NetworkRequest.Builder().addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET).build()
+            (connectivityManager as ConnectivityManager).registerNetworkCallback(request, networkCallback)
+        }
     }
 
     override fun onAttach(context: Context) {
@@ -63,14 +77,6 @@ class CategoryChooserFragment : Fragment() {
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-
-//        Timber.d("tracker in onSaveInstance: $tracker")
-//        tracker?.onSaveInstanceState(outState)
-        //outState.putLongArray(BUNDLE_KEY_WATCHARRAY_CATCHOOSER, watchList?.toLongArray())
-        //TODO this is not enough to preserve the state of the isWatched property
-        //probably must update allCategories to persist that in the viewModel
-
-        //tracking watched cats in sharedPreferences, TODO so how to manage updates
     }
 
     override fun onCreateView(
@@ -85,23 +91,7 @@ class CategoryChooserFragment : Fragment() {
             bestsellersViewModel.addCatToChooserCats(cat)
         }
 
-        //TODO do I need to update tracker to hold this watchedCats list from start?
-        if (savedInstanceState != null) {
-//            Timber.d("tracker in onCreateView: $tracker")
-//            tracker?.onRestoreInstanceState(savedInstanceState)
-//            watchList =
-//                savedInstanceState.getLongArray(BUNDLE_KEY_WATCHARRAY_CATCHOOSER)?.toMutableList()!!
-//            Timber.d(watchList.toString())
-        }
 
-        //TODO may not need this for current constraints of app
-        bestsellersViewModel.allCategories.observe(viewLifecycleOwner) {
-            Timber.d("observer of allCategories in viewmodel triggered: $it")
-            if (it != null) {
-
-                //bestsellersViewModel.refreshBestsellers()
-            }
-        }
 
         val binding = FragmentCategoryChooserBinding.inflate(inflater)
         binding.bviewModel = bestsellersViewModel
@@ -115,6 +105,8 @@ class CategoryChooserFragment : Fragment() {
         if (catRvAdapter == null) {
             Timber.d("adapter is null, should be init here")
             catRvAdapter = CatChooserListAdapter(requireContext(), CatChooserListAdapter.CategoryChooserOnClickListener { category ->
+                Timber.d("onClickListener triggered")
+
                 category.isWatched = !category.isWatched
                 if (category.isWatched) {
                     Timber.d("cat addition to watchlist called")
@@ -124,11 +116,11 @@ class CategoryChooserFragment : Fragment() {
                     bestsellersViewModel.removeCatFromChooserCats(category)
                 }
                 runBlocking {
-                    //TODO to flip the isWatched state to false
-                    Timber.d("updateCategory about to be called")
+                    //update cat in db
+                    //Timber.d("updateCategory about to be called")
                     bestsellersViewModel.updateCategory(category)
                 }
-                //TODO how to notify data changed
+
                 if (catRvAdapter!=null){
                     val locAdapter = catRvAdapter
                     locAdapter?.notifyDataSetChanged()
@@ -142,133 +134,51 @@ class CategoryChooserFragment : Fragment() {
             Timber.d("adapter not null")
         }
 
-//        Timber.d("current tracker before nullcheck in oncreateView: $tracker")
-//        if (tracker == null) {
-//            tracker = SelectionTracker.Builder<Category>(
-//                "selection-1",
-//                catRv,
-//                catRvAdapter?.let { adapter -> CatItemKeyProvider(adapter) }!!,
-//                CatLookup(catRv),
-//                StorageStrategy.createParcelableStorage(Category::class.java)
-//            ).withSelectionPredicate(
-//                SelectionPredicates.createSelectAnything()
-//            ).build()
-////                this listener, not called when attached to tracker b4 build
-////                .withOnItemActivatedListener{ itemDetails, event ->
-////                    Timber.d("in onItemActivatedListener details: $itemDetails, event: $event ")
-////
-////                    return@withOnItemActivatedListener true
-////                }
-//            Timber.d("current adapter before setTracker: $catRvAdapter")
-//            Timber.d("current tracker before setTracker: $tracker")
-//
-//
-//            bestsellersViewModel.watchedChooserCategories.value?.let {
-//                Timber.d("about to setItemsSelected. seems to be triggering removal of last item")
-//                Timber.d("value of watchedChooserCats: $it")
-//                if (it.isNotEmpty()){
-//
-//                tracker!!.setItemsSelected(
-//                    it, true
-//                )
-//                //TODO where to reset this to false, to get future selectionChanges handled?
-//                setItemsFlag = true
-//                }
-//            }
-//
-//
-//            tracker!!.addObserver(object : SelectionTracker.SelectionObserver<Category>() {
-//                override fun onSelectionChanged() {
-//                    super.onSelectionChanged()
-                    //val selection = tracker?.selection
-//                val localCatList = catList
-//                val index = tracker?.selection?.last()
-//                val indexInt = index?.toInt()!!
-//                val selectedCat = localCatList?.get(indexInt)
-//                    Timber.d("onSelectionChanged is called")
-//                    Timber.d("currentSelection: ${tracker!!.selection}")
-//                    if (!setItemsFlag) {
-//
-//                        val category = tracker!!.selection.last()
-//                        Timber.d("currCategory: $category")
-
-                        //TODO figure out a way to get position of item selected
-                        //TODO this notify call is triggering infinite loop
-                    //catRvAdapter!!.notifyDataSetChanged()
-//                    }
-//                    //TODO trying to setItemsFlag to false here, since it will presumably be called at least once
-//                    setItemsFlag = false
-                    //TODO change this whole procedure to update viewModel LiveData
-                    //observe elsewhere
-//                    Thread.sleep(5000)
-//                    runBlocking{
-//                        val catFromDb = bestsellersViewModel.fetchSingleCategory(category.encodedName)
-//                    }
-//                val locWatchList = watchList
-//                if (locWatchList != null) {
-//                    if (!locWatchList.contains(index)) {
-//                        watchList?.add(index)
-//                        localCatList?.get(indexInt)?.let { it1 -> watchedCategories?.add(it1) }
-//                        selectedCat?.isWatched = true
-//                        if (selectedCat != null) {
-//                            //Timber.d("selectedCat is not null")
-//                            //TODO should I update repo/db from here each time a cat is selected?
-//                            //or is there another way? Was hoping to update all the cats at once,
-//                            //on save
-//                            bestsellersViewModel.updateCategory(selectedCat)
-//                            //catList?.set(index, selectedCat)
-//                        }
-//
-//                    } else {
-//                        selectedCat?.isWatched = false
-//                        watchList?.remove(index)
-//                        localCatList?.get(indexInt)
-//                            ?.let { it1 -> watchedCategories?.remove(it1) }
-//                        if (selectedCat != null) {
-//                            Timber.d("selectedCat is not null")
-//                            //TODO should I update repo/db from here each time a cat is selected?
-//                            //or is there another way? Was hoping to update all the cats at once,
-//                            //on save
-//                            bestsellersViewModel.updateCategory(selectedCat)
-//                            //catList?.set(index, selectedCat)
-//                        }
-//                    }
-//                    //catRvAdapter.notifyDataSetChanged()
-//                }
-//
-//                }
-//            })
-//            catRvAdapter?.setTracker(tracker)
 
         //TODO work on this clearSelection component
-//        binding.clearSelectionFab.setOnClickListener {
-//            Timber.d("clear fab called")
-//            val cleared = tracker?.clearSelection()
-//            Timber.d("tracker cleared: $cleared")
-//            for (cat in watchedCategories){
-//                cat.isWatched = !cat.isWatched
-//                runBlocking{
-//                    bestsellersViewModel.updateCategory(cat)
-//                }
-//            }
-//            catRvAdapter!!.notifyDataSetChanged()
-//            watchedCategories = emptyList<Category>().toMutableList()
-//        }
+        binding.clearSelectionFab.setOnClickListener {
+            Timber.d("clear fab called")
+            val editor = categorySharedPrefs?.edit()
+            Timber.d("SharedPrefsEditor: $editor")
+            //editor.putString(WATCHED_CATEGORIES_SHARED)
+            editor?.putString(WATCHED_CATS_KEY_SHARED_PREFS, null)
+            editor?.apply()
+            val watchedCategories = bestsellersViewModel.watchedChooserCategories.value
+            if (watchedCategories != null) {
+                bestsellersViewModel.clearCatsFromChooserCats(watchedCategories)
+            }
+            if (catRvAdapter!=null){
+                val locAdapter = catRvAdapter
+                locAdapter?.notifyDataSetChanged()
+            }
+            bestsellersViewModel.fetchCategoriesList()
 
-        bestsellersViewModel.allCategories.observe(viewLifecycleOwner) {
-            Timber.d("allcats in CatChooserFragment: $it")
-            if (it.isEmpty()) {
+//            watchedCategories = emptyList<Category>().toMutableList()
+        }
+
+        bestsellersViewModel.showToast.observe(viewLifecycleOwner){
+            if (it!=null){
+                this.requireContext().toast(it)
+            }
+        }
+
+        bestsellersViewModel.showCatsLoading.observe(viewLifecycleOwner){
+            if (it) {
                 binding.noDataTv.visibility = View.VISIBLE
+                binding.catSelectInstruct.visibility = View.GONE
                 binding.categoryRv.visibility = View.GONE
             } else {
                 binding.categoryRv.visibility = View.VISIBLE
+                binding.catSelectInstruct.visibility = View.VISIBLE
                 binding.noDataTv.visibility = View.GONE
             }
+        }
+
+        bestsellersViewModel.allCategories.observe(viewLifecycleOwner) {
+            Timber.d("allcats in CatChooserFragment: $it")
 
             catRvAdapter!!.submitList(it)
 
-
-            //TODO Not great to use notifyDataSetChanged here
             catRvAdapter!!.notifyDataSetChanged()
             //catList = it as MutableList<Category>
             //it[0].isWatched = true
@@ -280,15 +190,10 @@ class CategoryChooserFragment : Fragment() {
 
 
         binding.confirmSelectionFab.setOnClickListener {
-            //TODO save all selections to SharedPrefs?
-            //getWatchedCatsFromSharedPrefs(requireContext())
+            //save all selections to SharedPrefs
             val moshi = Moshi.Builder().addLast(KotlinJsonAdapterFactory()).build()
             val adapter: JsonAdapter<Category> = moshi.adapter(Category::class.java)
             val catJsonStringBuilder = StringBuilder()
-//            val watchedCats = mutableListOf<Category>()
-//            for (item in watchList) {
-//                watchedCats.add(catList!![item.toInt()])
-//            }
             Timber.d("watchedCategories after fab click: ${bestsellersViewModel.watchedChooserCategories.value}")
 
 
@@ -298,15 +203,10 @@ class CategoryChooserFragment : Fragment() {
             }
 
             val editor = categorySharedPrefs?.edit()
-            //editor.putString(WATCHED_CATEGORIES_SHARED)
             editor?.putString(WATCHED_CATS_KEY_SHARED_PREFS, catJsonStringBuilder.toString())
             editor?.apply()
             if (bestsellersViewModel.watchedChooserCategories.value!!.isNotEmpty() && bestsellersViewModel.watchedChooserCategories.value!!.size <= 7) {
-                //TODO this didn't work because Selection couldn't be cast to MutableSelection
-                //suppose I could have iterated over selection and put in MutableSelection, maybe,
-                // but trying to use the watchedChooserCats and setItemsSelected
-                //val selection = tracker!!.selection
-//                bestsellersViewModel.setSelection(selection)
+                bestsellersViewModel.refreshBestsellers()
                 findNavController().popBackStack()
             } else if (bestsellersViewModel.watchedChooserCategories.value!!.isEmpty()) {
                 Toast.makeText(
@@ -326,10 +226,10 @@ class CategoryChooserFragment : Fragment() {
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-
+    override fun onDestroyView() {
+        super.onDestroyView()
+        val connectivityManager = requireContext().getSystemService(Context.CONNECTIVITY_SERVICE)
+        (connectivityManager as ConnectivityManager).unregisterNetworkCallback(networkCallback)
     }
 
 }

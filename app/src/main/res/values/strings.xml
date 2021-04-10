@@ -23,4 +23,9 @@
     <string name="list_update_notification_channel_id" translatable="false">list update notific channel</string>
     <string name="notification_title">Bestsellers Lists Updated</string>
     <string name="list_update_text">The content of one or more watched categories has been updated</string>
+    <string name="network_error">Network unavailable. Try connecting to wifi or mobile network</string>
+    <string name="network_exception">network busy: %s, try again in a minute</string>
+    <string name="bestsellers_empty">No bestseller data, it\'s either loading, or choose a category to display bestsellers</string>
+    <string name="about_details">An app for viewing bestselling lists of book from The New York Times Best Sellers lists. This app is not endorsed or affiliated with The New York Times</string>
+    <string name="new_york_times_logo">New York Times logo</string>
 </resources>

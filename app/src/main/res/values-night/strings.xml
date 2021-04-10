@@ -19,4 +19,6 @@
     <string name="detail_no_buylink_browser_avail">No app found to handle viewing this link. Try downloading a browser</string>
     <string name="detail_review">NYT Review:\nClick to read review</string>
     <string name="detail_desc">DESCRIPTION:\n%s</string>
+    <string name="about_details">An app for viewing bestselling lists of book from The New York Times Best Sellers lists. This app is not endorsed or affiliated with The New York Times</string>
+    <string name="new_york_times_logo">New York Times logo</string>
 </resources>

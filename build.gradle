@@ -8,7 +8,7 @@ buildscript {
         version_coroutines = "1.3.8"
         version_moshi="1.11.0"
         roomVersion="2.2.6"
-        navigationVersion="2.3.4"
+        navigationVersion="2.3.5"
         archLifecycleVersion="2.3.1"
     }
     repositories {

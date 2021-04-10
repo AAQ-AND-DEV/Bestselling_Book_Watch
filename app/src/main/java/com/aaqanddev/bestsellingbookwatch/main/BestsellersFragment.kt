@@ -1,7 +1,13 @@
 package com.aaqanddev.bestsellingbookwatch.main
 
+import android.content.Context
 import android.content.Context.MODE_PRIVATE
 import android.content.SharedPreferences
+import android.net.ConnectivityManager
+import android.net.Network
+import android.net.NetworkCapabilities
+import android.net.NetworkRequest
+import android.os.Build
 import android.os.Bundle
 import android.view.*
 import android.widget.TextView
@@ -17,6 +23,7 @@ import com.aaqanddev.bestsellingbookwatch.R
 import com.aaqanddev.bestsellingbookwatch.WATCHED_CATS_KEY_SHARED_PREFS
 import com.aaqanddev.bestsellingbookwatch.databinding.FragmentBestsellersBinding
 import com.aaqanddev.bestsellingbookwatch.model.Category
+import com.aaqanddev.bestsellingbookwatch.util.toast
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
@@ -26,30 +33,25 @@ import org.w3c.dom.Text
 import timber.log.Timber
 
 class BestsellersFragment : Fragment() {
-    //declare ViewModel
-//    private val bestsellersViewModel by activityViewModels< BestsellersViewModel>{
-//        BestsellerViewModelFactory((requireContext().applicationContext as BestsellersApplication), (requireContext().applicationContext as BestsellersApplication). )
-//    }
-    // inject viewModel here by koin
+
     private val bestsellersViewModel: BestsellersViewModel by sharedViewModel()
-
     private var categorySharedPrefs: SharedPreferences? = null
+    private val networkCallback = object : ConnectivityManager.NetworkCallback() {
+        override fun onAvailable(network: Network) {
+            //Network newly available, trigger cat fetch
+            bestsellersViewModel.fetchActiveList()
+        }
 
-    //TODO should I have this done only once? and place its declaration within onCreateView, so it won't be reused?
-    private lateinit var prefChangeListener: SharedPreferences.OnSharedPreferenceChangeListener
-
-//    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
-//        val jsonCategories = sharedPreferences?.getString(CATEGORIES_KEY_SHARED_PREFS, "")
-//        Timber.d(jsonCategories)
-//        //TODO parse the lines of the jsonCategories to Categories
-//        // TODO set the value of the viewModel observed cats to the result
-//        //Ah, but this will only be called when it's changed...so need other source
-//    }
+        override fun onLost(network: Network) {
+            //do nothing
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         categorySharedPrefs = context?.getSharedPreferences(CATEGORY_SHARED_PREFS, MODE_PRIVATE)
         setHasOptionsMenu(true)
+
     }
 
     override fun onCreateView(
@@ -59,22 +61,38 @@ class BestsellersFragment : Fragment() {
     ): View {
 
         Timber.d("onCreateView called")
-        val watchedCatsString = categorySharedPrefs?.getString(WATCHED_CATS_KEY_SHARED_PREFS,"")
-//        bestsellersViewModel.allCategories.observe(viewLifecycleOwner){
-//            Timber.d("observer of allCategories in viewmodel triggered")
-//            //TODO re-enable this refresh after testing empty db fetch
-//            //bestsellersViewModel.refreshBestsellers()
-//        }
-        if (watchedCatsString.isNullOrEmpty()){
-            this.findNavController().navigate(R.id.action_bestsellersFragment_to_categoryChooserFragment)
+        val watchedCatsString = categorySharedPrefs?.getString(WATCHED_CATS_KEY_SHARED_PREFS, "")
+
+        if (watchedCatsString.isNullOrEmpty()) {
+            this.findNavController()
+                .navigate(R.id.action_bestsellersFragment_to_categoryChooserFragment)
         }
+
+        val binding = FragmentBestsellersBinding.inflate(inflater)
 
         var activeCat = categorySharedPrefs?.getString(ACTIVE_CAT_SHARED_PREFS_KEY, "")
 
-        bestsellersViewModel.activeList.observe(viewLifecycleOwner){
+        bestsellersViewModel.showBestsellersLoading.observe(viewLifecycleOwner) {
+            if (it) {
+                binding.bestsellersNoData.visibility = View.VISIBLE
+                binding.bestsellersReclrview.visibility = View.GONE
+            } else {
+                binding.bestsellersNoData.visibility = View.GONE
+                binding.bestsellersReclrview.visibility = View.VISIBLE
+            }
+        }
+
+        bestsellersViewModel.showBestsellerToast.observe(viewLifecycleOwner) {
+            if (it != null) {
+                requireContext().toast(it)
+            }
+        }
+
+        bestsellersViewModel.activeList.observe(viewLifecycleOwner) {
             Timber.d("active list observer hit")
             Timber.d("id of new listname hash: ${it.hashCode()}")
-            container?.findViewById<TextView>(it.hashCode())?.setBackgroundColor(resources.getColor(R.color.color_accent_light))
+            container?.findViewById<TextView>(it.hashCode())
+                ?.setBackgroundColor(resources.getColor(R.color.color_accent_light))
             activeCat = it
             bestsellersViewModel.fetchActiveList()
         }
@@ -83,23 +101,8 @@ class BestsellersFragment : Fragment() {
             bestsellersViewModel.updateActiveList(activeCat!!)
         }
 
-        val binding = FragmentBestsellersBinding.inflate(inflater)
-
-//        prefChangeListener =
-//            SharedPreferences.OnSharedPreferenceChangeListener() { sharedPreferences: SharedPreferences, key: String ->
-//                val jsonCategories = sharedPreferences.getString(CATEGORIES_KEY_SHARED_PREFS, "")
-//                //Timber.d("inside sharedPrefChangeListnr: $jsonCategories")
-//                //TODO parse the lines of the jsonCategories to Categories   with split("\n")
-//                //TODO post to viewModel?
-//            }
-
-        //categorySharedPrefs?.registerOnSharedPreferenceChangeListener(prefChangeListener)
-
-        //Timber.d(sharedPrefs.toString())
-
-        val jsonWatchedCategories = categorySharedPrefs?.getString(WATCHED_CATS_KEY_SHARED_PREFS, "")
-        //Timber.d("outside changeListener: $jsonCategories")
-        //TODO post cats to viewModel
+        val jsonWatchedCategories =
+            categorySharedPrefs?.getString(WATCHED_CATS_KEY_SHARED_PREFS, "")
         val watchedCategoriesList = jsonWatchedCategories?.split("\n")
         Timber.d("watchedCategoriesList: $watchedCategoriesList")
         val moshi = Moshi.Builder().addLast(KotlinJsonAdapterFactory()).build()
@@ -108,18 +111,18 @@ class BestsellersFragment : Fragment() {
         if (watchedCategoriesList != null) {
 
             for (cat in watchedCategoriesList) {
-                if (cat.isNotBlank()){
+                if (cat.isNotBlank()) {
 
-                val newCat = moshiCategoryAdapter.fromJson(cat)
-                if (newCat != null) {
-                    watchedCategories.add(newCat)
-                }
+                    val newCat = moshiCategoryAdapter.fromJson(cat)
+                    if (newCat != null) {
+                        watchedCategories.add(newCat)
+                    }
                 }
             }
             Timber.d("watchedCats in BestsellersFrag: $watchedCategories")
-            //TODO add a View for each watchedCategory to the HorizScrollView Linlo
+            //add a View for each watchedCategory to the HorizScrollView Linlo
             val catsLinlo = binding.categoryChooserLinlo
-            for (cat in watchedCategories){
+            for (cat in watchedCategories) {
                 val catCV = CardView(this.requireContext())
                 catCV.setContentPadding(
                     resources.getDimension(R.dimen.margin_tiny).toInt(),
@@ -132,11 +135,12 @@ class BestsellersFragment : Fragment() {
                 catCV.setCardBackgroundColor(resources.getColor(android.R.color.holo_orange_light))
                 val nameTV = TextView(this.requireContext())
                 nameTV.text = cat.displayName
+                nameTV.textSize = 18f
                 nameTV.id = cat.encodedName.hashCode()
                 Timber.d("id of this TV: ${nameTV.id}")
-                if (activeCat == cat.encodedName){
+                if (activeCat == cat.encodedName) {
                     nameTV.setBackgroundColor(resources.getColor(R.color.color_accent_light))
-                } else{
+                } else {
                     nameTV.setBackgroundColor(resources.getColor(R.color.light_gray_bg))
                 }
                 nameTV.setTextColor(resources.getColor(R.color.black))
@@ -144,13 +148,10 @@ class BestsellersFragment : Fragment() {
                     val editor = categorySharedPrefs?.edit()
                     editor?.putString(ACTIVE_CAT_SHARED_PREFS_KEY, cat.encodedName)
                     editor?.apply()
-                    //TODO pretty sure hashcode will not be unique enough to properly identify
-                    //but just trying to get it to work here.
-                    //could add id field to Category Db
-                    //could keep map of watchedCats to an Int
+                    //hashcode activeCat for id field of TV
                     val oldActive = container?.findViewById<TextView>(activeCat.hashCode())
                     Timber.d("id of old active: ${activeCat.hashCode()}")
-                    oldActive?.setBackgroundColor( resources.getColor(R.color.light_gray_bg))
+                    oldActive?.setBackgroundColor(resources.getColor(R.color.light_gray_bg))
 
                     bestsellersViewModel.updateActiveList(cat.encodedName)
                 }
@@ -158,21 +159,17 @@ class BestsellersFragment : Fragment() {
                 catsLinlo.addView(catCV)
 
             }
-        //bestsellersViewModel.updateAllCategories(watchedCategories)
         }
 
-        //TESTING category storage in viewModel
-//        bestsellersViewModel.allCategories.observe(viewLifecycleOwner){
-//            Timber.d("current categories: $it")
-//        }
-
         val reclrView = binding.bestsellersReclrview
-        reclrView.addItemDecoration(DividerItemDecoration(reclrView.context, DividerItemDecoration.VERTICAL))
+        reclrView.addItemDecoration(
+            DividerItemDecoration(
+                reclrView.context,
+                DividerItemDecoration.VERTICAL
+            )
+        )
         reclrView.layoutManager =
             LinearLayoutManager(this.requireContext(), RecyclerView.VERTICAL, false)
-        //id seems to have been attained via call to asDomainModel, so id can be accessed
-        //TODO change to passing just id, and looking up item in ViewModel for DetailFrag
-        //which will get it from repo
         val adapter = BestsellerListAdapter(BestsellerClickListener { bestseller ->
             findNavController().navigate(
                 BestsellersFragmentDirections.actionBestsellersFragmentToBookDetailFragment(
@@ -182,29 +179,36 @@ class BestsellersFragment : Fragment() {
         })
         reclrView.adapter = adapter
 
-
-
-
         bestsellersViewModel.bestsellersToDisplay.observe(viewLifecycleOwner) {
             Timber.d("observer, bestsellers list to display: $it")
             adapter.submitList(it)
             adapter.notifyDataSetChanged()
         }
-//        runBlocking {
-//
-//            //binding.response.text = text
-//
-//        }
 
+        val connectivityManager = requireContext().getSystemService(Context.CONNECTIVITY_SERVICE)
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            (connectivityManager as ConnectivityManager).registerDefaultNetworkCallback(
+                networkCallback
+            )
+        } else {
+            val request =
+                NetworkRequest.Builder().addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+                    .build()
+            (connectivityManager as ConnectivityManager).registerNetworkCallback(
+                request,
+                networkCallback
+            )
+        }
 
         return binding.root
         //return super.onCreateView(inflater, container, savedInstanceState)
     }
 
-
     override fun onDestroyView() {
         super.onDestroyView()
-        //categorySharedPrefs?.unregisterOnSharedPreferenceChangeListener(prefChangeListener)
+        val connectivityManager = requireContext().getSystemService(Context.CONNECTIVITY_SERVICE)
+        (connectivityManager as ConnectivityManager).unregisterNetworkCallback(networkCallback)
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -212,7 +216,7 @@ class BestsellersFragment : Fragment() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId){
+        return when (item.itemId) {
             R.id.aboutFragment -> {
                 findNavController().navigate(BestsellersFragmentDirections.actionBestsellersFragmentToAboutFragment())
                 true
@@ -223,11 +227,5 @@ class BestsellersFragment : Fragment() {
             }
             else -> super.onOptionsItemSelected(item)
         }
-
     }
-    override fun onDestroy() {
-        super.onDestroy()
-
-    }
-
 }

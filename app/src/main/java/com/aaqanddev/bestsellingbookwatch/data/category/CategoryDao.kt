@@ -15,7 +15,7 @@ interface CategoryDao {
     fun addAll(categories: List<Category>)
 
     @Update
-    fun updateCategory(category: Category)
+    suspend fun updateCategory(category: Category)
 
     @Query("SELECT * FROM Categories WHERE encodedName = (:name)")
     fun getCategory(name: String): Category

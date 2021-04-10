@@ -41,6 +41,19 @@
             </LinearLayout>
         </HorizontalScrollView>
 
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/bestsellers_no_data"
+            android:text="@string/bestsellers_empty"
+            android:textSize="@dimen/textsize_large"
+            app:layout_constraintTop_toBottomOf="@id/category_chooser_scrollview"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:gravity="center_horizontal"
+            android:visibility="gone"
+            />
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/bestsellers_reclrview"
             android:layout_width="0dp"

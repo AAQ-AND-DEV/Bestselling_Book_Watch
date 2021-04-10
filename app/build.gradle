@@ -15,7 +15,7 @@ android {
 
     defaultConfig {
         applicationId "com.aaqanddev.bestsellingbookwatch"
-        minSdkVersion 19
+        minSdkVersion 21
         targetSdkVersion 30
         versionCode 1
         versionName "1.0"
@@ -63,7 +63,7 @@ dependencies {
     // Logging
     implementation "com.jakewharton.timber:timber:$version_timber"
 
-    implementation "androidx.recyclerview:recyclerview:1.1.0"
+    implementation "androidx.recyclerview:recyclerview:1.2.0"
     implementation 'androidx.recyclerview:recyclerview-selection:1.1.0'
 
     //kotlin coroutines
