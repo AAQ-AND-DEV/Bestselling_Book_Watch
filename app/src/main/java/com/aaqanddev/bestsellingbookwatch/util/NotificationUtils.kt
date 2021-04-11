@@ -12,6 +12,7 @@ import com.aaqanddev.bestsellingbookwatch.R
 import com.aaqanddev.bestsellingbookwatch.main.MainActivity
 import timber.log.Timber
 
+//solution informed by Udacity classroom project: https://github.com/udacity/android-kotlin-notifications
 
 private val NOTIFICATION_ID = 0
 private val REQUEST_CODE = 0

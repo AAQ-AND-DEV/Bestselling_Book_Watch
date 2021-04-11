@@ -8,6 +8,7 @@ import androidx.core.content.ContextCompat
 import com.aaqanddev.bestsellingbookwatch.R
 import com.aaqanddev.bestsellingbookwatch.util.sendNotification
 
+//solution informed by Udacity classroom project: https://github.com/udacity/android-kotlin-notifications
 class ListUpdateReceiver : BroadcastReceiver() {
 
     override fun onReceive(context: Context, intent: Intent) {

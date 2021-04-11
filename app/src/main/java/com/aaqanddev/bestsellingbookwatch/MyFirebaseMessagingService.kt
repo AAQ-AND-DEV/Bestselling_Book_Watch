@@ -8,6 +8,7 @@ import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import timber.log.Timber
 
+//solution informed by Udacity classroom project: https://github.com/udacity/android-kotlin-notifications
 class MyFirebaseMessagingService: FirebaseMessagingService() {
 
     /**
