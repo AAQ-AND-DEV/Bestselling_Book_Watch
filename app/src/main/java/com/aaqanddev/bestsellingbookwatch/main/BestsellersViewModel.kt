@@ -159,7 +159,7 @@ class BestsellersViewModel(
         if (updatedDatetimeString.isNullOrBlank() || updatedDatetimePlus20hrs?.toEpochSecond(
                 ZoneOffset.MIN
             )!! < System.currentTimeMillis()
-        ) {
+        ){
             viewModelScope.launch {
                 Timber.d("repo.refreshBestsellers called in vm")
                 repository.refreshBestsellers(watchedCategories.value)

@@ -23,7 +23,7 @@ class BookDetailFragment : Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View{
+    ): View {
 
         //TODO get id from BookDetailFragmentArgs (Q: will I have access to the id at this point?)
         val book = BookDetailFragmentArgs.fromBundle(requireArguments()).book
@@ -36,41 +36,47 @@ class BookDetailFragment : Fragment() {
             .error(R.drawable.ic_baseline_error_24)
             .into(imgView)
 
-        val categoriesLinLo = binding.categoriesLinlo
+        val categoriesCL = binding.categoriesCL
         val categories = book.categories
-        if (categories!=null){
+        if (categories != null) {
 
-        for (cat in categories){
-        val textView = TextView(requireContext())
-            textView.text = cat
-            val layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
-            textView.layoutParams = layoutParams
-            val textViewMarginParams = textView.layoutParams as ViewGroup.MarginLayoutParams
-            textViewMarginParams.setMargins(
-                resources.getDimension(R.dimen.margin_tiny).toInt(),
-                resources.getDimension(R.dimen.margin_tiny).toInt(),
-                resources.getDimension(R.dimen.margin_tiny).toInt(),
-                0,
-            )
-            textView.setTextColor(resources.getColor(R.color.color_accent_dark))
-            categoriesLinLo.addView(textView)
-            //TODO polish/post add onClick to send to listView of that category
-        }
+            for (cat in categories) {
+                val textView = TextView(requireContext())
+                textView.text = cat
+                textView.id = cat.hashCode() + 1
+                val layoutParams = LinearLayout.LayoutParams(
+                    ViewGroup.LayoutParams.WRAP_CONTENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT
+                )
+                textView.layoutParams = layoutParams
+                val textViewMarginParams = textView.layoutParams as ViewGroup.MarginLayoutParams
+                textViewMarginParams.setMargins(
+                    resources.getDimension(R.dimen.margin_tiny).toInt(),
+                    resources.getDimension(R.dimen.margin_tiny).toInt(),
+                    resources.getDimension(R.dimen.margin_tiny).toInt(),
+                    0,
+                )
+                textView.setTextColor(resources.getColor(R.color.color_accent_dark))
+                categoriesCL.addView(textView)
+                binding.categoriesFlow.addView(textView)
+                //TODO polish/post add onClick to send to listView of that category
+            }
 
         }
-        val buylinkLinLo = binding.buylinksLinlo
-        buylinkLinLo.dividerDrawable = resources.getDrawable(R.drawable.vertical_divider)
-        buylinkLinLo.showDividers = SHOW_DIVIDER_MIDDLE
+        val buylinkCL = binding.buylinksCL
         val netBuyLinks = book.buyLinks
         val buyLinks = netBuyLinks?.buyLinks
         //var idxBuyLinks = 0
         if (buyLinks != null) {
-            for (link in buyLinks){
-                //TODO make a layout for this that looks better
+            for (link in buyLinks) {
                 val cardView = CardView(requireContext())
-                val layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+                val layoutParams = LinearLayout.LayoutParams(
+                    ViewGroup.LayoutParams.WRAP_CONTENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT
+                )
                 cardView.layoutParams = layoutParams
-                val cardViewMarginParams = cardView.getLayoutParams() as ViewGroup.MarginLayoutParams
+                val cardViewMarginParams =
+                    cardView.getLayoutParams() as ViewGroup.MarginLayoutParams
                 cardViewMarginParams.setMargins(
                     resources.getDimension(R.dimen.margin_tiny).toInt(),
                     resources.getDimension(R.dimen.margin_medium).toInt(),
@@ -86,29 +92,30 @@ class BookDetailFragment : Fragment() {
                     resources.getDimension(R.dimen.margin_medium).toInt(),
                     resources.getDimension(R.dimen.margin_medium).toInt(),
                     resources.getDimension(R.dimen.margin_medium).toInt(),
-                    )
-                    val textView = TextView(requireContext())
-                textView.text = resources.getString(R.string.buyLink,link.name)
+                )
+                cardView.id = link.hashCode()
+                val textView = TextView(requireContext())
+                textView.text = resources.getString(R.string.buyLink, link.name)
 
                 textView.isClickable = true
                 textView.isFocusable = true
-                textView.setOnClickListener {
-                    view ->
+                textView.setOnClickListener { view ->
                     val intent = Intent(Intent.ACTION_VIEW)
-                    intent.setData(Uri.parse(link.url))
-                    try{
+                    intent.data = Uri.parse(link.url)
+                    try {
 
-                    startActivity(intent)
-                    } catch (e: ActivityNotFoundException){
-                        Toast.makeText(textView.context, getString(R.string.detail_no_buylink_browser_avail), Toast.LENGTH_LONG).show()
+                        startActivity(intent)
+                    } catch (e: ActivityNotFoundException) {
+                        Toast.makeText(
+                            textView.context,
+                            getString(R.string.detail_no_buylink_browser_avail),
+                            Toast.LENGTH_LONG
+                        ).show()
                     }
                 }
                 cardView.addView(textView)
-                buylinkLinLo.addView(cardView)
-//                if (idxBuyLinks<buyLinks.size-1){
-//
-//                }
-//                idxBuyLinks++
+                buylinkCL.addView(cardView)
+                binding.buylinksFlow.addView(cardView)
             }
         }
 

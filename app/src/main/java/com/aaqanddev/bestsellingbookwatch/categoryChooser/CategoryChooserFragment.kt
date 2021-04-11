@@ -162,18 +162,6 @@ class CategoryChooserFragment : Fragment() {
             }
         }
 
-        bestsellersViewModel.showCatsLoading.observe(viewLifecycleOwner){
-            if (it) {
-                binding.noDataTv.visibility = View.VISIBLE
-                binding.catSelectInstruct.visibility = View.GONE
-                binding.categoryRv.visibility = View.GONE
-            } else {
-                binding.categoryRv.visibility = View.VISIBLE
-                binding.catSelectInstruct.visibility = View.VISIBLE
-                binding.noDataTv.visibility = View.GONE
-            }
-        }
-
         bestsellersViewModel.allCategories.observe(viewLifecycleOwner) {
             Timber.d("allcats in CatChooserFragment: $it")
 

@@ -5,7 +5,10 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-
+        <variable
+            name="viewModel"
+            type="com.aaqanddev.bestsellingbookwatch.main.BestsellersViewModel" />
+        <import type="android.view.View"/>
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -15,30 +18,40 @@
         android:background="@color/med_gray_bg">
 
         <HorizontalScrollView
-            android:id="@+id/category_chooser_scrollview"
+            android:id="@+id/cat_chooser_SV"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/margin_big"
             android:layout_marginBottom="@dimen/margin_medium"
+            android:paddingBottom="@dimen/margin_medium"
             android:layout_marginStart="@dimen/margin_big"
             android:layout_marginEnd="@dimen/margin_big"
-            app:layout_constraintBottom_toTopOf="@id/bestsellers_reclrview"
-            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            >
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/category_chooser_CL"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            >
 
-            <LinearLayout
-                android:id="@+id/category_chooser_linlo"
+            <androidx.constraintlayout.helper.widget.Flow
+                android:id="@+id/category_chooser_flow"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:orientation="horizontal">
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/default_category"
-                    android:visibility="invisible"
-                    />
-            </LinearLayout>
+                android:orientation="horizontal"
+                app:flow_wrapMode="none"
+                app:flow_horizontalStyle="packed"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                >
+            </androidx.constraintlayout.helper.widget.Flow>
+        </androidx.constraintlayout.widget.ConstraintLayout>
         </HorizontalScrollView>
 
         <TextView
@@ -47,12 +60,12 @@
             android:id="@+id/bestsellers_no_data"
             android:text="@string/bestsellers_empty"
             android:textSize="@dimen/textsize_large"
-            app:layout_constraintTop_toBottomOf="@id/category_chooser_scrollview"
+            app:layout_constraintTop_toBottomOf="@id/cat_chooser_SV"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             android:gravity="center_horizontal"
-            android:visibility="gone"
+            android:visibility="@{viewModel.showBestsellersLoading ? View.VISIBLE : View.GONE}"
             />
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/bestsellers_reclrview"
@@ -61,10 +74,11 @@
             android:layout_marginStart="@dimen/margin_medium"
             android:layout_marginEnd="@dimen/margin_medium"
             android:layout_marginBottom="@dimen/margin_medium"
-            app:layout_constraintTop_toBottomOf="@id/category_chooser_scrollview"
+            app:layout_constraintTop_toBottomOf="@id/cat_chooser_SV"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            android:visibility="@{viewModel.showBestsellersLoading ? View.GONE : View.VISIBLE}"
             />
 
         <ProgressBar

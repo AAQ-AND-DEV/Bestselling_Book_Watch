@@ -74,17 +74,17 @@ class RoomConverter {
 
     @TypeConverter
     fun fromNBL(links:List<NetworkBuyLink>?): String{
-        var json : StringBuilder? =null
+        val json : StringBuilder = StringBuilder()
         if (!links.isNullOrEmpty()){
+
             for (link in links){
 
-                json = java.lang.StringBuilder()
-                json.append("${nblAdapter.toJson(link)} \t")
+                json.append("${nblAdapter.toJson(link)}\t")
 
             }
 
         }
-        //Timber.d("json string in fromNBL: ${json.toString()}")
+        Timber.d("json string in fromNBL: ${json.toString()}")
         return json.toString()
     }
 
@@ -95,7 +95,7 @@ class RoomConverter {
         if (!links.isNullOrEmpty()){
             list = mutableListOf()
             for (link in links){
-                //Timber.d("toNBL val of parsed links: $link")
+                Timber.d("toNBL val of parsed links: $link")
                 if (link.isNotBlank()){
 
                 nblAdapter.fromJson(link)?.let { list.add(it) }

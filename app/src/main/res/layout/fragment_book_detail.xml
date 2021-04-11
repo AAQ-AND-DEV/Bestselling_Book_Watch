@@ -21,7 +21,6 @@
             android:layout_height="wrap_content"
             android:background="@color/light_gray_bg"
             app:layoutDescription="@xml/detail_motion_layout"
-            app:motionDebug="SHOW_PATH"
             tools:showIn="@layout/activity_main"
             tools:context=".main.MainActivity"
             >
@@ -73,15 +72,26 @@
                 android:text="@string/categories_label"
                 app:layout_constraintTop_toBottomOf="@id/detail_publisher" />
 
-            <LinearLayout
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/categories_linlo"
+                android:id="@+id/categories_CL"
                 android:orientation="vertical"
                 android:gravity="center_horizontal"
                 android:layout_marginBottom="@dimen/margin_medium"
                 app:layout_constraintTop_toBottomOf="@id/categories_label"
-                app:layout_constraintBottom_toTopOf="@id/desc_review_flow"/>
+                app:layout_constraintBottom_toTopOf="@id/desc_review_flow">
+                <androidx.constraintlayout.helper.widget.Flow
+                    android:id="@+id/categories_flow"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    />
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -115,7 +125,7 @@
                 app:constraint_referenced_ids="detail_desc,detail_review_link"
                 app:flow_verticalAlign="top"
                 app:flow_horizontalGap="@dimen/margin_medium"
-                app:layout_constraintTop_toBottomOf="@id/categories_linlo"
+                app:layout_constraintTop_toBottomOf="@id/categories_CL"
                 app:layout_constraintBottom_toTopOf="@id/buylinks_scrollview"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -138,19 +148,17 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 >
 
-                <androidx.appcompat.widget.LinearLayoutCompat
-                    android:id="@+id/buylinks_linlo"
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/buylinks_CL"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:background="@color/med_gray_bg"
                     android:orientation="horizontal">
-<!-- todo remove this placeholder textview -->
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:id="@+id/default_buylink"
-                        android:visibility="invisible" />
-                </androidx.appcompat.widget.LinearLayoutCompat>
+                    <androidx.constraintlayout.helper.widget.Flow
+                        android:id="@+id/buylinks_flow"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"/>
+                </androidx.constraintlayout.widget.ConstraintLayout>
             </HorizontalScrollView>
         </androidx.constraintlayout.motion.widget.MotionLayout>
     </ScrollView>

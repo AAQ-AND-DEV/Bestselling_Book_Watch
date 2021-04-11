@@ -72,15 +72,8 @@ class BestsellersFragment : Fragment() {
 
         var activeCat = categorySharedPrefs?.getString(ACTIVE_CAT_SHARED_PREFS_KEY, "")
 
-        bestsellersViewModel.showBestsellersLoading.observe(viewLifecycleOwner) {
-            if (it) {
-                binding.bestsellersNoData.visibility = View.VISIBLE
-                binding.bestsellersReclrview.visibility = View.GONE
-            } else {
-                binding.bestsellersNoData.visibility = View.GONE
-                binding.bestsellersReclrview.visibility = View.VISIBLE
-            }
-        }
+        binding.viewModel = bestsellersViewModel
+        binding.lifecycleOwner = this
 
         bestsellersViewModel.showBestsellerToast.observe(viewLifecycleOwner) {
             if (it != null) {
@@ -121,22 +114,19 @@ class BestsellersFragment : Fragment() {
             }
             Timber.d("watchedCats in BestsellersFrag: $watchedCategories")
             //add a View for each watchedCategory to the HorizScrollView Linlo
-            val catsLinlo = binding.categoryChooserLinlo
-            for (cat in watchedCategories) {
-                val catCV = CardView(this.requireContext())
-                catCV.setContentPadding(
+            val catsFlow = binding.categoryChooserFlow
+
+            for ((ind, cat) in watchedCategories.withIndex()) {
+                val nameTV = TextView(this.requireContext())
+                nameTV.text = cat.displayName
+                nameTV.textSize = 18f
+                nameTV.id = cat.encodedName.hashCode()
+                nameTV.setPadding(
                     resources.getDimension(R.dimen.margin_tiny).toInt(),
                     resources.getDimension(R.dimen.margin_tiny).toInt(),
                     resources.getDimension(R.dimen.margin_tiny).toInt(),
                     resources.getDimension(R.dimen.margin_tiny).toInt()
                 )
-                catCV.radius = 24f
-                catCV.maxCardElevation = 12f
-                catCV.setCardBackgroundColor(resources.getColor(android.R.color.holo_orange_light))
-                val nameTV = TextView(this.requireContext())
-                nameTV.text = cat.displayName
-                nameTV.textSize = 18f
-                nameTV.id = cat.encodedName.hashCode()
                 Timber.d("id of this TV: ${nameTV.id}")
                 if (activeCat == cat.encodedName) {
                     nameTV.setBackgroundColor(resources.getColor(R.color.color_accent_light))
@@ -144,21 +134,31 @@ class BestsellersFragment : Fragment() {
                     nameTV.setBackgroundColor(resources.getColor(R.color.light_gray_bg))
                 }
                 nameTV.setTextColor(resources.getColor(R.color.black))
-                catCV.setOnClickListener {
+                nameTV.setOnClickListener {
                     val editor = categorySharedPrefs?.edit()
                     editor?.putString(ACTIVE_CAT_SHARED_PREFS_KEY, cat.encodedName)
                     editor?.apply()
-                    //hashcode activeCat for id field of TV
+                    //hashcode activeCat for id field of CV
                     val oldActive = container?.findViewById<TextView>(activeCat.hashCode())
                     Timber.d("id of old active: ${activeCat.hashCode()}")
                     oldActive?.setBackgroundColor(resources.getColor(R.color.light_gray_bg))
 
                     bestsellersViewModel.updateActiveList(cat.encodedName)
                 }
-                catCV.addView(nameTV)
-                catsLinlo.addView(catCV)
+                //catCV.addView(nameTV)
+                binding.categoryChooserCL.addView(nameTV)
+                catsFlow.addView(nameTV)
+                val dividerTV = TextView(requireContext())
+                dividerTV.background =
+                    requireContext().resources.getDrawable(R.drawable.vertical_divider)
+                dividerTV.id = ind
+                if (ind < watchedCategories.size - 1) {
+                    binding.categoryChooserCL.addView(dividerTV)
+                    catsFlow.addView(dividerTV)
+                }
 
             }
+            Timber.d("ref ids for flow: ${catsFlow.referencedIds}")
         }
 
         val reclrView = binding.bestsellersReclrview
