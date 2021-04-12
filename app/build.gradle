@@ -76,8 +76,6 @@ dependencies {
     implementation "com.jakewharton.retrofit:retrofit2-kotlin-coroutines-adapter:0.9.2"
     //Interceptor for logging api calls
     implementation 'com.squareup.okhttp3:logging-interceptor:4.8.1'
-    //Scalar converter for initial test
-    implementation "com.squareup.retrofit2:converter-scalars:$version_retrofit"
 
     implementation 'com.squareup.picasso:picasso:2.71828'
 
