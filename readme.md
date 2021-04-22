@@ -10,3 +10,7 @@ Bestselling Book Watch accesses the New York Times Best Seller Lists to display 
 ```kotlin
     nytApiKey=REPLACE_THIS_TEXT_API_KEY_HERE
 ```
+
+## Features
+* ### Overview of Application found in [Overview](Bestseller_Book_Watch_Application_Overview.pdf)
+* ### Current Screens and feature implementation timeline can be found in [Design Document](Bestselling_Book_Watch_Design_Document.pdf)
